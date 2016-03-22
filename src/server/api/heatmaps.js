@@ -22,7 +22,6 @@ router.route('/')
                 res.status(400).send(error);
             });
 
-
     })
     .get((req, res)=> {
 
@@ -56,6 +55,7 @@ router.route('/')
 
     });
 
+/** @namespace req.params.heatmapId */
 router.route('/:heatmapId')
     .get((req, res) => {
 
