@@ -127,14 +127,14 @@ export const ELEMENT_MAPPING = {
     "wbr": 121
 };
 
-export class ElementPath {
+class ElementPath {
 
     static getPathToRoot(elementArray) {
 
         var tmpArray = [];
         for (let i = 0; i < elementArray.length; i++) {
             if (elementArray.hasOwnProperty(i)) {
-                if ((elementArray[i] instanceof Window || elementArray[i] instanceof Document) == false) {
+                if ((elementArray[i] instanceof Window || elementArray[i] instanceof Document) === false) {
 
                     var elmID = ElementPath.createElementId(elementArray[i]);
 
@@ -170,6 +170,8 @@ export class ElementPath {
                     }
                 }
                 elmID += ELEMENT_POSITION_SEPARATOR + index;
+            }else if(element.localName == 'html'){
+                elmID += ELEMENT_POSITION_SEPARATOR + '0';
             }
         }
         return elmID;
@@ -185,6 +187,10 @@ export class ElementPath {
         });
     }
 
+    /**
+     * @param code
+     * @returns {elementTagName, elementSiblingPosition}
+     */
     static getElementNameFromCode(code) {
 
         if (typeof code == "undefined" || code.length == 0) {
@@ -209,3 +215,5 @@ export class ElementPath {
     }
 
 }
+
+export {ElementPath};
