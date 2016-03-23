@@ -56,3 +56,6 @@ function initMapping() {
     });
 }
 exports.initMapping = initMapping;
+
+initIndex();
+initMapping;
