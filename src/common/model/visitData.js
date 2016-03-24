@@ -2,8 +2,8 @@ import {Record} from 'immutable';
 
 const VisitData = Record({
     url: '',
-    mouse_movements: {},
-    mouse_clicks: {},
+    mouse_movements: '',
+    mouse_clicks: '',
     visit_time: new Date(0)
 });
 
