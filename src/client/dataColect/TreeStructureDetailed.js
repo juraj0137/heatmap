@@ -43,7 +43,7 @@ class TreeStructureDetailed {
                 }
 
                 if (subtree[key].points[attentionKey] == undefined) {
-                    subtree[key].points[attentionKey] = 0;
+                    subtree[key].points[attentionKey] = 1;
                 } else {
                     subtree[key].points[attentionKey]++;
                 }
