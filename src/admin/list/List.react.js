@@ -1,5 +1,6 @@
 import './heatmap-list.less';
 import React from "react";
+import {Link} from "react-router";
 import dateformat from "dateformat";
 import { connect } from 'react-redux';
 import {Button, Table, OverlayTrigger, Popover} from "react-bootstrap";
@@ -178,8 +179,7 @@ class ViewList extends React.Component {
                 matchStrings = (
                     <div>
                         {item.matchStrings[0]},
-                        <OverlayTrigger trigger="click"
-                                        placement="right"
+                        <OverlayTrigger trigger="click" placement="right"
                                         overlay={<Popover id={i} title="Všetky sledované url ..">{item.matchStrings.map((item, i) => {
                                             return (<div key={i}>{item}</div>)
                                         })}</Popover>}>
@@ -202,7 +202,11 @@ class ViewList extends React.Component {
                     <td className="text-center">{item.pageViews}</td>
                     <td className="text-center">{dateformat(item.created.toString(), "dd.mm.yyyy - h:MM")}</td>
                     <td>
-                        <Button bsStyle="success" bsSize="small">Zobraziť</Button>
+                        <Link to={`/detail/${item.id}`}>
+                            <Button bsStyle="success" bsSize="small">
+                                Zobraziť
+                            </Button>
+                        </Link>
                         {statusButton}
                         <Button bsStyle="warning" bsSize="small" onClick={()=>{self.editHeatmap(item)}}>Upraviť</Button>
                     </td>

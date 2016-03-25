@@ -9,7 +9,7 @@ import {heatmapApp} from './app/reducers';
 
 import LayoutApp from './app/App.react';
 import ViewList from './list/List.react';
-import ViewDetail from './list/Detail.react.js';
+import ViewDetail from './detail/Detail.react.js';
 
 class HeatmapAdmin extends React.Component {
 
