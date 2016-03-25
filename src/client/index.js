@@ -1,9 +1,13 @@
 import {configHeatmap} from './config';
 import {IdleDetect} from './idle-detect';
 
+import {HeatmapUtils} from './../common/utils';
+import VisitData from './../common/model/visitData';
 import {FlatArrayStructure} from './dataColect/FlatArrayStructure';
 import {TreeStructure} from './dataColect/TreeStructure';
 import {TreeStructureDetailed} from './dataColect/TreeStructureDetailed';
+
+const LOCAL_STORAGE_KEY = 'heatmap_visit_data';
 
 class Heatmap {
     constructor(enable = true, massRatio = 100) {
@@ -16,141 +20,83 @@ class Heatmap {
     }
 
     init() {
-
-        this.dataFlatStructure = new FlatArrayStructure();
-        this.dataTreeStructure = new TreeStructure();
         this.dataTreeStructureDetailed = new TreeStructureDetailed();
-
-        this.heatmap = null;
-
-        //ukladanie dat do localstroage
-        //setInterval(()=> {
-        //    this.saveDataToLocalstorage();
-        //}, 1000);
-    }
-
-    showHeatmap(heatmapData) {
-
-        if (this.heatmap == null) {
-            if (typeof h337 == "object") {
-                this.heatmap = h337.create({
-                    container: document.getElementsByTagName('body')[0]
-                });
-            }
-
-        }
-        //document.getElementsByClassName('heatmap-canvas')[0].style.zIndex = 10000;
-
-        if (typeof this.heatmap == "object") {
-
-            this.heatmap.setData({
-                max: heatmapData.max,
-                min: heatmapData.min,
-                data: heatmapData.points
-            })
-        }
-    }
-
-    showHeatmapFromFlatArray() {
-        let heatmapData;
-
-        //heatmapData = this.dataFlatStructure.getDataForHeatmap();
-        //console.log('data from flat structure: ' + JSON.stringify(heatmapData).length);
-
-        //heatmapData = this.dataTreeStructure.getDataForHeatmap();
-        //console.log('data from tree structure: ' + JSON.stringify(heatmapData).length);
-
-        heatmapData = this.dataTreeStructureDetailed.getDataForHeatmap();
-        console.log('data from tree detailed structure: ' + JSON.stringify(heatmapData).length);
-
-        this.showHeatmap(heatmapData);
+        this.sendVisitData();
     }
 
     bindEvents() {
 
         const self = this;
-        window.addEventListener('load', function hm_windowLoad() {
+        let currentEvent = null;
 
-            let currentElement = null,
-                currentEvent = null;
 
-            document.addEventListener('mousemove', function (event) {
-
-                // pokracujeme iba ak sme sa pohli na iny element
-                if (currentElement != event.target) {
-                    currentElement = event.target;
-                    self.onMouseMove(event);
-                }
-
-                // druhy sposob zaznamenavania, kazdych x milisekund
-                currentEvent = event;
-
-            });
-
-            let idle = false;
-            new IdleDetect({
-                time: 1000,
-                onIdleStart: ()=> { idle = true; },
-                onIdleStop:  ()=> { idle = false;}
-            });
-
-            setInterval(function hm_incrementInterval() {
-                if (!idle && currentEvent != null) {
-                    self.dataTreeStructureDetailed.increment(currentEvent);
-                }
-            }, 200);
-
+        document.addEventListener('mousemove', function (event) {
+            currentEvent = event;
         });
 
-        //setInterval(function(){
-        //    self.showHeatmapFromFlatArray();
-        //},500);
-
-        document.addEventListener('DOMContentLoaded', ()=> {
-            if (typeof h337 == "object") {
-                this.heatmap = h337.create({
-                    container: document.getElementsByTagName('body')[0]
-                });
+        let idle = false;
+        new IdleDetect({
+            time: 1000,
+            onIdleStart: ()=> {
+                idle = true;
+            },
+            onIdleStop: ()=> {
+                idle = false;
             }
         });
 
-        document.addEventListener('keydown', (e) => {
-            let evtobj = window.event ? event : e;
-            if (evtobj.keyCode == 81 && evtobj.ctrlKey) //q
-                self.showHeatmapFromFlatArray();
-            
-            if (evtobj.keyCode == 66 && evtobj.ctrlKey) { //b
-                $.ajax({
-                    method: "POST",
-                    url: "http://localhost:63342/bakalarka-heatmap/aktuality.html",
-                    data: {data: JSON.stringify(self.dataTreeStructureDetailed)}
-                });
-                let b = new Blob([self.dataTreeStructureDetailed.collectedData]);
-                console.log(b.size);
-                b = new Blob([JSON.stringify(self.dataTreeStructureDetailed.collectedData)]);
-                console.log(b.size);
+        setInterval(function hm_incrementInterval() {
+            if (!idle && currentEvent != null) {
+                self.dataTreeStructureDetailed.increment(currentEvent);
             }
+        }, 100);
 
-            if (evtobj.keyCode == 69 && evtobj.ctrlKey) //e
-                document.getElementsByClassName('heatmap-canvas')[0].style.zIndex = -1;
 
-        });
+        window.addEventListener('beforeunload', ()=> {
+            let visitData = new VisitData({
+                url: window.location.host + '' + window.location.pathname,
+                mouse_clicks: JSON.stringify({}),
+                mouse_movements: JSON.stringify(self.dataTreeStructureDetailed.collectedData),
+                visit_time: new Date()
+            });
 
-        let resizeTimer = null;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            //resizeTimer = setTimeout(()=> {
-            //    this.showHeatmapFromFlatArray();
-            //}, 300);
+            window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(visitData.toJS()));
+
         });
 
     }
 
-    onMouseMove(event) {
-        this.dataFlatStructure.increment(event);
-        this.dataTreeStructure.increment(event);
-    }
+    sendVisitData() {
+        try {
 
+            let localStorageData = localStorage.getItem(LOCAL_STORAGE_KEY);
+            localStorageData = JSON.parse(localStorageData);
+
+            if (localStorageData != null) {
+
+                let mouseClicks,
+                    mouseMovements;
+
+                mouseClicks = JSON.parse(localStorageData.mouse_clicks);
+                mouseMovements = JSON.parse(localStorageData.mouse_movements);
+
+                if (!HeatmapUtils.isEmptyObject(mouseClicks) || !HeatmapUtils.isEmptyObject(mouseMovements)) {
+
+                    $.ajax({
+                        url: "http://localhost:8080/api/collect",
+                        method: "POST",
+                        data: localStorageData,
+                        dataType: "json"
+                    }).always(()=> {
+                        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(null));
+                    });
+                }
+            }
+
+        } catch (e) {
+            console.error(e);
+        }
+    }
 }
 
 new Heatmap(configHeatmap.enable, configHeatmap.population);
