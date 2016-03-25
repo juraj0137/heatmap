@@ -166,6 +166,22 @@ class HeatmapUtils {
         });
     }
 
+    static isEmptyObject(obj) {
+
+        // null a undefined su "empty"
+        if (obj == null) return true;
+
+        // rozhodnutie na zaklade dlzky
+        if (obj.length > 0)    return false;
+        if (obj.length === 0)  return true;
+
+        for (var key in obj) {
+            if (hasOwnProperty.call(obj, key)) return false;
+        }
+
+        return true;
+    }
+
 
 }
 
