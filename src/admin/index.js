@@ -8,8 +8,8 @@ import createBrowserHistory from 'history/lib/createBrowserHistory';
 import {heatmapApp} from './app/reducers';
 
 import LayoutApp from './app/App.react';
-import ViewList from './heatmap/List.react';
-import ViewDetail from './heatmap/Detail.react.js';
+import ViewList from './list/List.react';
+import ViewDetail from './list/Detail.react.js';
 
 class HeatmapAdmin extends React.Component {
 

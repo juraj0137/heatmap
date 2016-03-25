@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import * as appAction from './actions';
-import heatmaps from './../heatmap/reducers';
+import heatmaps from './../list/reducers';
 
 function lastAction(state = null, action) {
     return action;

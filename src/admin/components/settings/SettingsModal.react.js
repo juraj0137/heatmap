@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import {Modal, Button, Row, Col, Input, DropdownButton, MenuItem, ButtonGroup, Alert} from "react-bootstrap";
 
 import Heatmap, * as HeatmapUtils from './../../../common/model/heatmap.js';
-import {addHeatmap, updateHeatmap} from './../../heatmap/actions.js';
+import {addHeatmap, updateHeatmap} from './../../list/actions.js';
 
 class SettingsModal extends React.Component {
 
