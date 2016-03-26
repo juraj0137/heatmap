@@ -1,7 +1,7 @@
 import VisitData from './../../../common/model/visitData';
 import BaseElasticService from './BaseElasticService.js';
 
-class VisitDataService extends BaseElasticService{
+class VisitDataService extends BaseElasticService {
 
     constructor() {
         super();
@@ -32,7 +32,17 @@ class VisitDataService extends BaseElasticService{
     }
 
     find(query) {
-        return super.find(query);
+        return new Promise((resolve, reject)=> {
+
+            this.db.search({
+                index: this.indexName,
+                body: query.getQuery()
+            }).then((response) => {
+                resolve(response);
+            }).catch((error)=> {
+                reject(error);
+            });
+        });
     }
 }
 

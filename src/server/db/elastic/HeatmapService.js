@@ -128,8 +128,6 @@ class HeatmapService extends BaseElasticService {
     find(query) {
         return new Promise((resolve, reject)=> {
 
-            console.log(query.getQuery());
-
             this.db.search({
                 index: this.indexName,
                 body: query.getQuery()
