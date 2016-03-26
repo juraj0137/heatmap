@@ -94,12 +94,16 @@ class HeatmapUtils {
     static getPositionBetweenSiblings(element) {
         var index = -1;
         if (element.parentElement != null) {
-            for (let i = 0; i < element.parentElement.children.length; i++) {
-                if (element.parentElement.children[i] === element) {
-                    index = i;
-                    break;
-                }
-            }
+
+            let children = element.parentElement.children;
+            return Object.keys(children).filter((key)=>{
+                if(isNaN( parseInt(key) ))
+                    return false;
+
+                return children[key].tagName == element.tagName;
+            }).map((key)=>{
+                return children[key];
+            }).indexOf(element);
         }
         return index;
     }
