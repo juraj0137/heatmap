@@ -83,7 +83,7 @@ class Heatmap {
                 if (!HeatmapUtils.isEmptyObject(mouseClicks) || !HeatmapUtils.isEmptyObject(mouseMovements)) {
 
                     $.ajax({
-                        url: "http://localhost:8080/api/collect",
+                        url: "http://localhost:8080/api/visit",
                         method: "POST",
                         data: localStorageData,
                         dataType: "json"
