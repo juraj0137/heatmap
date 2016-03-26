@@ -7,8 +7,63 @@ import {HeatmapUtils} from './../../common/utils';
 
 class TreeStructureDetailed {
 
-    constructor() {
-        this.collectedData = {};
+    constructor(data) {
+        this.collectedData = data != undefined ? data : {};
+    }
+
+    mergeData(newData) {
+
+        console.log('--- mergujem ---');
+        //debugger;
+        this._traversMerge(this.collectedData, newData);
+    }
+
+    _mergePoints(data, newData){
+        if (data.points === undefined) {
+            data.points = newData.points;
+        } else {
+            for (let i in newData.points) {
+                if (newData.points.hasOwnProperty(i)) {
+                    if (data.points[i] !== undefined)
+                        data.points[i] = 0;
+
+                    data.points[i] += newData.points[i];
+                }
+            }
+        }
+    }
+
+    _traversMerge(data, newData) {
+
+        for (let key in newData) {
+            if (newData.hasOwnProperty(key) === false)
+                continue;
+
+            // ak neexistuje cely podstrom tak ho pripojime cely
+            if (data[key] === undefined) {
+                data[key] = newData[key];
+                continue;
+            }
+
+            // ak su definovane body pohybu
+            if (newData[key].points !== undefined) {
+                this._mergePoints(data[key], newData[key]);
+            }
+
+            if(newData[key].elements !== undefined){
+                for(let i in newData[key].elements){
+                    if(newData[key].elements.hasOwnProperty(i)){
+                        let newElm = newData[key].elements[i];
+                        if(data[key].elements[i] == undefined){
+                            data[key].elements[i] = newElm;
+                        }else{
+                            this._traversMerge(data[key].elements[i].elements, newElm.elements)
+                        }
+                    }
+                }
+            }
+
+        }
     }
 
     increment(event) {
@@ -63,8 +118,16 @@ class TreeStructureDetailed {
                 if (element.hasOwnProperty(key) === false)
                     continue;
 
-                let splitKey = key.split(ELEMENT_POSITION_SEPARATOR);
-                let currentElm = domElements.slice(0).pop().children[splitKey[1]];
+                let splitKey = key.split(ELEMENT_POSITION_SEPARATOR),
+                    children = domElements.slice(0).pop().children,
+                    currentElm = Object.keys(children).filter((key)=> {
+                        return children[key].tagName == splitKey[0]
+                    }).map((key)=> {
+                        return children[key];
+                    })[splitKey[1]];
+
+                if (currentElm == undefined)
+                    continue;
 
                 if (typeof element[key].elements == "object") {
 
@@ -103,9 +166,9 @@ class TreeStructureDetailed {
     }
 
 
-    getDataForHeatmap() {
+    getDataForHeatmap(doc) {
 
-        let DOMElements = [document.documentElement];
+        let DOMElements = [doc != undefined ? doc : document.documentElement];
         this.heatmapData = {
             points: [],
             min: 100000,
