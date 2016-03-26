@@ -9,6 +9,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use('/heatmaps', require('./heatmaps.js'));
-app.use('/collect', require('./collectData.js'));
+app.use('/visit', require('./visitData.js'));
+app.use('/scrapper', require('./webScrapper.js'));
 
 module.exports = app;
