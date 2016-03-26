@@ -31,9 +31,9 @@ class HeatmapAdmin extends React.Component {
         }
 
         this.store.subscribe(() => {
-            const {lastAction} = this.store.getState();
-            console.log(this.store.getState());
-            console.log(lastAction);
+            //const {lastAction} = this.store.getState();
+            //console.log(this.store.getState());
+            //console.log(lastAction);
         });
     }
 

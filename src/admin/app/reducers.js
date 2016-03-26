@@ -1,7 +1,9 @@
 import { combineReducers } from 'redux';
 import * as appAction from './actions';
 import heatmaps from './../list/reducers';
+import heatmapDetail from './../detail/reducers';
 
+//noinspection JSUnusedLocalSymbols
 function lastAction(state = null, action) {
     return action;
 }
@@ -35,6 +37,7 @@ function flashMessages(state = initialState, action) {
 
 const heatmapApp = combineReducers({
     heatmaps,
+    heatmapDetail,
     flashMessages,
     lastAction
 });
