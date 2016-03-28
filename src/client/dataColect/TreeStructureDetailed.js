@@ -147,7 +147,7 @@ class TreeStructureDetailed {
                         }
 
                         let k = attentioKey.toString();
-                        let elmPosition = HeatmapUtils.getElementAttentionAreaPosition(currentElm, k[0], k[1]);
+                        let elmPosition = HeatmapUtils.getElementAttentionAreaPosition(currentElm, k[0], k[1], domElements[0]);
 
                         // pridame data na vykraslenie heatmapy
                         this.heatmapData.points.push({
@@ -169,6 +169,10 @@ class TreeStructureDetailed {
     getDataForHeatmap(doc) {
 
         let DOMElements = [doc != undefined ? doc : document.documentElement];
+        if(doc != undefined){
+            DOMElements.push(doc.getElementsByTagName('html')[0]);
+        }
+
         this.heatmapData = {
             points: [],
             min: 100000,

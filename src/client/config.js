@@ -6,7 +6,8 @@
 
 const configHeatmap = {
     enable: true, // enable tracking
-    population: 100 // percent
+    population: 100, // percent
+    apiUrl: "http://heatmaphub.com/api/visit"
 };
 
 export {configHeatmap};
