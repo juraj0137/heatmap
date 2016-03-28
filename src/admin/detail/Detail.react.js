@@ -1,10 +1,11 @@
 import "./heatmap-detail.less";
-import heatmapRenderer from "./heatmap.min.js";
+import heatmapRenderer from "heatmap.js";
 import React from "react";
 import jquery from "jquery";
 import { connect } from 'react-redux';
 import {TreeStructureDetailed} from  "./../../client/dataColect/TreeStructureDetailed.js";
 import {setHeight, setWidth} from './../detail/actions.js';
+import {getHeatmap} from './../list/actions.js';
 
 import HeatmapSettings from './../components/detail/HeatmapSettings.react.js';
 
@@ -14,55 +15,28 @@ class ViewDetail extends React.Component {
         super(props);
 
         this.state = {
-            mouseMovements: null,
+            mouseMovementsRaw: null,
+            mouseMovementsProcessed: null,
             mouseClicks: null
         };
 
         this.loadData();
         this.heatmap = null;
 
-        this.refreshHeatmap = this.refreshHeatmap.bind(this);
+        this.renderHeatmap = this.renderHeatmap.bind(this);
     }
 
     componentDidMount() {
         this.props.dispatch(setWidth(1200));
         this.props.dispatch(setHeight(660));
+        this.props.dispatch(getHeatmap('AVOX9lB9x1j1Wq6RKKna'));
     }
 
     loadData() {
-        jquery.ajax({
-            url: "/api/visit?url=www.aktuality.sk",
-            method: "GET",
-            dataType: "json"
-        }).done((data)=> {
-            let mouseMovements = new TreeStructureDetailed();
-            let mouseClicks = new TreeStructureDetailed();
-            for (let i = 0; i < data.length; i++) {
 
-                try {
-                    mouseMovements.mergeData(JSON.parse(data[i].mouse_movements));
-                } catch (e) {
-                    console.log(e);
-                }
-
-                try {
-                    mouseClicks.mergeData(JSON.parse(data[i].mouse_clicks));
-                } catch (e) {
-                    console.log(e);
-                }
-            }
-            
-            console.log(mouseMovements);
-
-            this.setState({
-                mouseMovements: mouseMovements,
-                mouseClicks: mouseClicks
-            });
-        });
     }
 
     processHeatmapData() {
-
         var iframe = this.refs['page'].getElementsByTagName('iframe')[0];
         var doc = (iframe.contentWindow || iframe.contentDocument);
         if (doc.document) {
@@ -72,28 +46,57 @@ class ViewDetail extends React.Component {
         if (this.heatmap == null) {
             if (typeof heatmapRenderer == "object") {
                 this.heatmap = heatmapRenderer.create({
-                    container: doc.getElementsByTagName('body')[0]
+                    container: doc.getElementsByTagName('body')[0],
+                    opacity: this.props.detail.heatmapOpacity,
+                    radius: this.props.detail.heatmapRadius,
+                    blur: this.props.detail.heatmapBlur
                 });
             }
         }
 
-        return this.state.mouseMovements.getDataForHeatmap(doc.getElementsByTagName('html')[0]);
+        return this.state.mouseMovementsRaw.getDataForHeatmap(doc)
     }
 
-    renderHeatmap(heatmapData) {
+    renderHeatmap() {
+
+        let heatmapData = this.processHeatmapData();
+
+        this.setState({
+            mouseMovementsProcessed: heatmapData
+        });
 
         if (typeof this.heatmap == "object") {
             this.heatmap.setData({
                 max: heatmapData.max,
                 min: heatmapData.min,
                 data: heatmapData.points
-            })
+            });
         }
     }
 
-    refreshHeatmap() {
-        let heatmapData = this.processHeatmapData();
-        this.renderHeatmap(heatmapData);
+    componentWillReceiveProps(nextProps) {
+
+        let {heatmapRadius, heatmapBlur, heatmapOpacity} = nextProps.detail;
+        let {heatmap} = this;
+
+        if (heatmap != null) {
+            if (this.props.detail.heatmapRadius !== heatmapRadius) {
+                heatmap._store._cfgRadius = heatmapRadius;
+                let heatmapData = this.state.mouseMovementsProcessed;
+                heatmap.setData({
+                    max: heatmapData.max,
+                    min: heatmapData.min,
+                    data: heatmapData.points
+                });
+            }
+            if (this.props.detail.heatmapBlur !== heatmapBlur || this.props.detail.heatmapOpacity !== heatmapOpacity) {
+                heatmap._renderer._templates = {};
+                heatmap.configure({
+                    opacity: heatmapOpacity,
+                    blur: heatmapBlur
+                });
+            }
+        }
     }
 
     render() {
@@ -112,13 +115,12 @@ class ViewDetail extends React.Component {
                 </div>
                 <div className="row">
                     <div className="col-lg-12">
-                        <HeatmapSettings onRefreshButtonClick={this.refreshHeatmap}/>
+                        <HeatmapSettings onRefreshButtonClick={this.renderHeatmap}/>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-lg-12 iframe-wrapper" ref="page">
-                        <iframe src="/api/scrapper?url=http://aktuality.sk"
-                                style={iframeCss}></iframe>
+                        <iframe src="/api/scrapper?url=http://aktuality.sk" style={iframeCss}></iframe>
                     </div>
                 </div>
             </div>
