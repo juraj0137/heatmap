@@ -100,6 +100,9 @@ class SettingsModal extends React.Component {
             });
         };
 
+        if(matchType == HeatmapUtils.TYPE_FULL_URL){
+            snapshotUrl = matchStrings[0];
+        }
 
         dispatch(addHeatmap(new Heatmap({
             status: status,
@@ -133,6 +136,10 @@ class SettingsModal extends React.Component {
                 }
             });
         };
+
+        if(matchType == HeatmapUtils.TYPE_FULL_URL){
+            snapshotUrl = matchStrings[0];
+        }
 
         let EditedHeatmap = this.props.heatmaps.filter((heatmap)=> {
             return heatmap.id == id

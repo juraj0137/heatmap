@@ -12,6 +12,8 @@ export const GET_HEATMAP_DATA_START = 'GET_HEATMAP_DATA_START';
 export const GET_HEATMAP_DATA_SUCCESS = 'GET_HEATMAP_DATA_SUCCESS';
 export const GET_HEATMAP_DATA_FAIL = 'GET_HEATMAP_DATA_FAIL';
 
+export const SET_CONFIG = 'SET_CONFIG';
+
 export function setWidth(width) {
     return {
         type: HEATMAP_WIDTH,
@@ -55,7 +57,6 @@ export function setBlur(blur) {
         blur: blur
     };
 }
-
 
 export function getHeatmapData(heatmapId, success, error) {
     return dispatch => {
@@ -112,4 +113,11 @@ function getHeatmapDataFail(error) {
         type: GET_HEATMAP_DATA_FAIL,
         error
     };
+}
+
+export function setConfig(config){
+    return {
+        type: SET_CONFIG,
+        config: config
+    }
 }

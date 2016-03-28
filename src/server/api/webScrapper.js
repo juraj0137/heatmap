@@ -5,7 +5,7 @@ var router = express.Router();
 router.route('/')
     .get((req, res) => {
 
-        var url = req.query.url;
+        var url = req.query.snapshotUrl;
         request(url, function (error, response, html) {
 
             res.status(200).send(html);

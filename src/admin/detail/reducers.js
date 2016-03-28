@@ -8,7 +8,8 @@ const initialState = {
     heatmapBlur: 0.85,
     viewType: actions.VIEW_TYPE_MOVEMENTS,
     mouseMovementsData: {},
-    mouseClicksData: {}
+    mouseClicksData: {},
+    heatmapConfig: null
 };
 
 export default function heatmapDetail(state = initialState, action) {
@@ -43,6 +44,11 @@ export default function heatmapDetail(state = initialState, action) {
         case actions.HEATMAP_OPACITY:
             return Object.assign({}, state, {
                 heatmapOpacity: action.opacity
+            });
+
+        case actions.SET_CONFIG:
+            return Object.assign({}, state, {
+                heatmapConfig: action.config
             });
 
         default:
