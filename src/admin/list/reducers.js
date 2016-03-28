@@ -3,7 +3,7 @@ import * as actions from './actions';
 const initialState = {
     added: false,
     error: null,
-    heatmaps: [],
+    heatmaps: [], //@todo zmenit na imutable strukturu
     isAdding: false,
     isFetching: false,
     isUpdating: false,
@@ -26,7 +26,7 @@ export default function heatmaps(state = initialState, action) {
             return Object.assign({}, state, {
                 isAdding: false,
                 added: true,
-                heatmaps: [...state.heatmaps, action.heatmap]
+                heatmaps: [action.heatmap, ...state.heatmaps]
             });
         }
 
@@ -49,8 +49,8 @@ export default function heatmaps(state = initialState, action) {
 
         case actions.HEATMAP_UPDATE_SUCCESS:
         {
-            let newHeatmaps = state.heatmaps.map((heatmap)=>{
-                if(heatmap.id == action.heatmap.id){
+            let newHeatmaps = state.heatmaps.map((heatmap)=> {
+                if (heatmap.id == action.heatmap.id) {
                     return action.heatmap;
                 }
                 return heatmap;
@@ -93,6 +93,22 @@ export default function heatmaps(state = initialState, action) {
                 lastUpdated: action.receivedAt,
                 error: null
             })
+        }
+
+        case actions.GET_HEATMAP_SUCCESS:
+        {
+            return Object.assign({}, state, {
+                isFetching: false,
+                heatmaps: [action.heatmap, ...state.heatmaps],
+                error: null
+            })
+        }
+        case actions.GET_HEATMAP_FAIL:
+        {
+            return Object.assign({}, state, {
+                isFetching: false,
+                error: action.error
+            });
         }
 
         default:

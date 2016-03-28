@@ -1,4 +1,4 @@
-import React from 'react';
+import jquery from "jquery";
 import {HeatmapUtils} from './../../common/utils';
 import Heatmap, {STATUS_ACTIVE,STATUS_FINISHED,STATUS_PAUSED, TYPE_BULK, TYPE_FULL_URL, TYPE_START_WITH} from './../../common/model/heatmap';
 
@@ -14,6 +14,9 @@ export const HEATMAPS_FETCH_START = 'HEATMAPS_FETCH_START';
 export const HEATMAPS_FETCH_FAIL = 'HEATMAPS_FETCH_FAIL';
 export const HEATMAPS_FETCH_SUCCESS = 'HEATMAPS_FETCH_SUCCESS';
 
+export const GET_HEATMAP_SUCCESS = 'GET_HEATMAP_SUCCESS';
+export const GET_HEATMAP_FAIL = 'GET_HEATMAP_FAIL';
+
 /**
  * Adding new hetamap
  */
@@ -21,24 +24,23 @@ export function addHeatmap(heatmap, success, error) {
     return dispatch => {
         dispatch(addHeatmapStart());
 
-        // fake ajax
-        setTimeout(()=> {
-
-            if (Math.random() < 0.8) {
-                heatmap = heatmap.set('id', HeatmapUtils.uuid());
-                heatmap = heatmap.set('created', new Date());
-                dispatch(addHeatmapSuccess({data: {heatmap}}));
-                if (typeof success == "function") {
-                    success();
-                }
-            } else {
-                dispatch(addHeatmapFail(new Error('Error while adding heatmap')));
-                if (typeof error == "function") {
-                    error();
-                }
+        heatmap = heatmap.set('created', new Date());
+        jquery.ajax({
+            url: "/api/heatmaps/",
+            method: "POST",
+            dataType: "json",
+            data: heatmap.toJS()
+        }).done((data)=> {
+            dispatch(addHeatmapSuccess(data));
+            if (typeof success == "function") {
+                success();
             }
-        }, 1000);
-
+        }).fail(()=> {
+            dispatch(addHeatmapFail(new Error('Error while adding heatmap')));
+            if (typeof error == "function") {
+                error();
+            }
+        });
     }
 }
 function addHeatmapStart() {
@@ -47,9 +49,10 @@ function addHeatmapStart() {
     };
 }
 function addHeatmapSuccess(json) {
+    let heatmap = new Heatmap(json.heatmap);
     return {
         type: HEATMAP_ADD_SUCCESS,
-        heatmap: json.data.heatmap
+        heatmap: heatmap
     };
 }
 function addHeatmapFail(error) {
@@ -80,7 +83,7 @@ export function fetchHeatmaps(success, error) {
             new Heatmap({
                 id: HeatmapUtils.uuid(),
                 status: STATUS_ACTIVE,
-                title: 'Clanok',
+                title: 'Článok',
                 matchType: TYPE_START_WITH,
                 matchStrings: ['http://aktuality.sk/clanok/*'],
                 pageViews: 561060,
@@ -98,7 +101,7 @@ export function fetchHeatmaps(success, error) {
             new Heatmap({
                 id: HeatmapUtils.uuid(),
                 status: STATUS_PAUSED,
-                title: 'Kategoria',
+                title: 'Kategória',
                 matchType: TYPE_BULK,
                 matchStrings: ['http://aktuality.sk/prominenti/*', 'http://aktuality.sk/spravy/*', 'http://aktuality.sk/koktejl/*'],
                 pageViews: 556160,
@@ -185,5 +188,45 @@ function updateHeatmapFail(error) {
     return {
         type: HEATMAP_UPDATE_FAIL,
         error: error
+    };
+}
+
+/**
+ * Get heatmap by id
+ * @param heatmapId
+ * @param success
+ * @param error
+ */
+export function getHeatmap(heatmapId, success, error) {
+    return dispatch => {
+
+        jquery.ajax({
+            url: "/api/heatmaps/" + heatmapId,
+            method: "GET",
+            dataType: "json"
+        }).done((data)=> {
+            dispatch(getHeatmapSuccess(data));
+            if (typeof success == "function") {
+                success();
+            }
+        }).fail(()=> {
+            dispatch(getHeatmapFail(new Error('Error while getting heatmap (' + heatmapId + ')')));
+            if (typeof error == "function") {
+                error();
+            }
+        });
+    };
+}
+function getHeatmapSuccess(json) {
+
+    return {
+        type: GET_HEATMAP_SUCCESS,
+        heatmap: new Heatmap(json.heatmap)
+    };
+}
+function getHeatmapFail(error) {
+    return {
+        type: GET_HEATMAP_FAIL,
+        error
     };
 }
