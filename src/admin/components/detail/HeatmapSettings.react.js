@@ -51,7 +51,7 @@ class HeatmapSettings extends React.Component {
     }
 
     handleRefreshHeatmap() {
-        if (this.props.onRefreshButtonClick == "function")
+        if (typeof this.props.onRefreshButtonClick == "function")
             this.props.onRefreshButtonClick.call(this);
     }
 
