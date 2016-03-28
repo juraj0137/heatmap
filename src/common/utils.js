@@ -3,13 +3,16 @@ class HeatmapUtils {
     /**
      * Returns center position of element
      * @param elem
+     * @param paDoc optional
      * @returns {{x: number, y: number}}
      */
-    static getElementCenterPosition(elem) {
+    static getElementCenterPosition(elem, paDoc) {
+
+        var doc = paDoc !== undefined ? paDoc : document;
 
         // (1)
         var box = elem.getBoundingClientRect();
-        var body = document.body;
+        var body = doc.body;
         var docElem = document.documentElement;
 
         // (2)
@@ -63,10 +66,10 @@ class HeatmapUtils {
         return {x: x, y: y};
     }
 
-    static getElementAttentionAreaPosition(element, x, y) {
+    static getElementAttentionAreaPosition(element, x, y, document) {
 
         let box = element.getBoundingClientRect();
-        let centerOfElement = this.getElementCenterPosition(element);
+        let centerOfElement = this.getElementCenterPosition(element, document);
 
         let top = centerOfElement.y - (box.height / 2);
         let left = centerOfElement.x - (box.width / 2);
@@ -123,44 +126,6 @@ class HeatmapUtils {
         }
 
         return tmp_ar;
-    }
-
-    /**
-     * Returns the approximate memory usage, in bytes, of the specified object. The
-     * parameter is:
-     *
-     * object - the object whose size should be determined
-     */
-    static sizeof(object) {
-        var objectList = [];
-        var stack = [object];
-        var bytes = 0;
-
-        while (stack.length) {
-            var value = stack.pop();
-
-            if (typeof value === 'boolean') {
-                bytes += 4;
-            }
-            else if (typeof value === 'string') {
-                bytes += value.length * 2;
-            }
-            else if (typeof value === 'number') {
-                bytes += 8;
-            }
-            else if
-            (
-                typeof value === 'object'
-                && objectList.indexOf(value) === -1
-            ) {
-                objectList.push(value);
-
-                for (var i in value) {
-                    stack.push(value[i]);
-                }
-            }
-        }
-        return bytes;
     }
 
     static uuid() {
