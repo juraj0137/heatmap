@@ -61,7 +61,10 @@ class SettingsModal extends React.Component {
     }
 
     close() {
-        this.setState({visible: false});
+        this.setState({
+            visible: false,
+            flashMessage: {type: 'info', text: ''}
+        });
         this.onHide();
     }
 
@@ -119,7 +122,6 @@ class SettingsModal extends React.Component {
             setTimeout(()=> {
                 this.close();
                 this.onHide();
-                this.setState({flashMessage: {type: 'info', text: ''}});
             }, 1200);
         };
 
@@ -211,7 +213,7 @@ class SettingsModal extends React.Component {
     }
 
     handleChangeTitle(event) {
-        this.setState({title: event.target.value.trim()});
+        this.setState({title: event.target.value});
     }
 
     handleChangeType(e, eventKey) {
