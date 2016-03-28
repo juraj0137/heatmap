@@ -96,9 +96,7 @@ class HeatmapService extends BaseElasticService {
                 index: this.indexName,
                 type: this.docType,
                 id: id,
-                body: {
-                    doc: obj
-                }
+                body: obj
             }).then(function (result) {
                 document = document.set('id', result._id);
                 resolve(document);

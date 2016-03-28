@@ -43,14 +43,20 @@ router.route('/')
                 res.status(400).send(error);
             });
     })
-    .put((req) => {
+    .put((req, res) => {
 
         var heatmap = new Heatmap(req.body);
 
         (new HeatmapService())
             .update(heatmap)
             .then((heatmap)=> {
-                console.log(heatmap);
+                res.json({
+                    heatmap: heatmap
+                });
+            })
+            .catch((error)=> {
+                res.status(400).send(error);
+
             })
 
     });
