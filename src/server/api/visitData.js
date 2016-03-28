@@ -38,12 +38,16 @@ router.route('/')
         (new VisitDataService)
             .find(query)
             .then((data)=> {
-                res.json(data.hits.hits.map((item)=>{
+                res.json(data.hits.hits.map((item)=> {
                     return {
                         mouse_clicks: item._source.mouse_clicks,
                         mouse_movements: item._source.mouse_movements
                     }
                 }))
+            })
+            .catch((error)=> {
+                console.log(error );
+                res.status(400).send();
             })
 
     });

@@ -4,6 +4,12 @@ var winston = require("winston");
 var express = require('express');
 var path = require('path');
 
+var production = true;
+if (process.argv.indexOf('dev') > 0) {
+    production = false;
+}
+console.log('Enviroment is ' + (production ? 'production' : 'developement'));
+
 /**
  * Setup logger
  */
@@ -26,30 +32,34 @@ var app = express();
 /**
  * Hot reload modul pre developing
  */
-var webpack = require('webpack');
-var config = require('./../../webpack.config');
-var compiler = webpack(config(false));
+if (production == false) {
 
-app.use(require('webpack-dev-middleware')(compiler, {
-    noInfo: true,
-    publicPath: config(false).output.publicPath
-}));
+    var webpack = require('webpack');
+    var config = require('./../../webpack.config');
+    var compiler = webpack(config(production));
 
-app.use(require('webpack-hot-middleware')(compiler));
+    app.use(require('webpack-dev-middleware')(compiler, {
+        noInfo: true,
+        publicPath: config(production).output.publicPath
+    }));
+
+    app.use(require('webpack-hot-middleware')(compiler));
+
+}
 
 
 /**
  * Static files
  */
 const oneDay = 86400000;
-app.use('/static/admin', express.static(path.join(__dirname, '../../build/admin'), { maxAge: oneDay }));
-app.use('/static/css', express.static(path.join(__dirname, '../../build/css'), { maxAge: oneDay }));
-app.use('/static', express.static(path.join(__dirname, '../../build/client'), { maxAge: oneDay }));
+app.use('/static/admin', express.static(path.join(__dirname, '../../build/admin'), {maxAge: oneDay}));
+app.use('/static/css', express.static(path.join(__dirname, '../../build/css'), {maxAge: oneDay}));
+app.use('/static', express.static(path.join(__dirname, '../../build/client'), {maxAge: oneDay}));
 
 /**
  * API
  */
-app.use('/api',require('./api/index.js'));
+app.use('/api', require('./api/index.js'));
 
 /**
  * Pre vsetky ostatne volania zobrazime index.html, kde sa nachadza React App s routrom
