@@ -7,9 +7,7 @@ function config(production) {
     var isProd = (production != undefined && production == true);
 
     var plugins = [
-        new ExtractTextPlugin("css/bundle.css", {allChunks: true}),
-        new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoErrorsPlugin()
+        new ExtractTextPlugin("css/bundle.css", {allChunks: true})
     ];
 
 
@@ -35,10 +33,6 @@ function config(production) {
     }
 
     var webpackConfig = {
-        entry: {
-            admin: ['webpack-hot-middleware/client', './src/admin/index.js'],
-            client: ['webpack-hot-middleware/client', './src/client/index.js']
-        },
         output: {
             path: path.join(__dirname, "build"),
             filename: "[name]/bundle.js",
@@ -58,7 +52,17 @@ function config(production) {
 
     if (!isProd) {
         webpackConfig.devtool = 'inline-source-map';
+        webpackConfig.entry = {
+            admin: ['webpack-hot-middleware/client', './src/admin/index.js'],
+            client: ['webpack-hot-middleware/client', './src/client/index.js']
+        };
+        plugins.push(new webpack.HotModuleReplacementPlugin());
+        plugins.push(new webpack.NoErrorsPlugin());
     } else {
+        webpackConfig.entry = {
+            admin: ['./src/admin/index.js'],
+            client: ['./src/client/index.js']
+        };
         plugins.push(new webpack.optimize.UglifyJsPlugin({minimize: true}));
     }
 
