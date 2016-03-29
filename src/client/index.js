@@ -87,7 +87,7 @@ class Heatmap {
                         method: "POST",
                         data: localStorageData,
                         dataType: "json"
-                    }).always(()=> {
+                    }).done(()=> {
                         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(null));
                     });
                 }

@@ -1,4 +1,5 @@
 import jquery from "jquery";
+import {TreeStructureDetailed} from "./../../client/dataColect/TreeStructureDetailed.js";
 
 export const HEATMAP_WIDTH = 'HEATMAP_WIDTH';
 export const HEATMAP_HEIGHT = 'HEATMAP_HEIGHT';
@@ -36,11 +37,13 @@ export function setViewTypeClicks() {
         type: VIEW_TYPE_CLICKS
     };
 }
-export function setOpacity(opacity) {
-    opacity = Math.max(0, Math.min(opacity, 1));
+export function setOpacity(min, max) {
+    min = Math.max(0.01, Math.min(min, 9.99));
+    max = Math.max(0.01, Math.min(max, 9.99));
     return {
         type: HEATMAP_OPACITY,
-        opacity: opacity
+        opacityMin: min,
+        opacityMax: max
     };
 }
 export function setRadius(radius) {
@@ -58,17 +61,17 @@ export function setBlur(blur) {
     };
 }
 
-export function getHeatmapData(heatmapId, success, error) {
+function getHeatmapData(heatmapId, success, error) {
     return dispatch => {
 
         dispatch(getHeatmapDataStart());
 
         jquery.ajax({
-            url: "/api/heatmapData/" + heatmapId,
+            url: "/api/visit/" + heatmapId,
             method: "GET",
             dataType: "json"
         }).done((data)=> {
-            dispatch(getHeatmapDataSuccess({data: data}));
+            dispatch(getHeatmapDataSuccess(data));
             if (typeof success == "function") {
                 success();
             }
@@ -80,32 +83,26 @@ export function getHeatmapData(heatmapId, success, error) {
         });
     };
 }
+export function getHeatmapDataIfNeeded(heatmapId, success, error) {
+    return (dispatch, getState) => {
+        if (getState().heatmapDetail.fetchingMouseData == false) {
+            dispatch(getHeatmapData(heatmapId, success, error))
+        }
+    }
+}
 function getHeatmapDataStart() {
     return {
         type: GET_HEATMAP_DATA_START
     };
 }
 function getHeatmapDataSuccess(json) {
-    let mouseMovements = new TreeStructureDetailed();
-    let mouseClicks = new TreeStructureDetailed();
-
-    try {
-        mouseMovements = new TreeStructureDetailed(JSON.parse(json.data.mouse_movements));
-    } catch (e) {
-        console.log(e);
-    }
-
-    try {
-        mouseClicks = new TreeStructureDetailed(JSON.parse(json.data.mouse_clicks));
-    } catch (e) {
-        console.log(e);
-    }
+    let movements = new TreeStructureDetailed(json.mouseMovements != undefined ? json.mouseMovements : {});
+    let clicks = new TreeStructureDetailed(json.mouseClicks != undefined ? json.mouseClicks : {});
 
     return {
         type: GET_HEATMAP_DATA_SUCCESS,
-        mouseMovements: mouseMovements,
-        mouseClicks: mouseClicks,
-        receivedAt: Date.now()
+        mouseMovements: movements,
+        mouseClicks: clicks
     };
 }
 function getHeatmapDataFail(error) {

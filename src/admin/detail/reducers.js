@@ -4,12 +4,14 @@ const initialState = {
     heatmapWidth: 320,
     heatmapHeight: 500,
     heatmapRadius: 40,
-    heatmapOpacity: 0.6,
+    heatmapOpacityMax: 9.99,
+    heatmapOpacityMin: 0.01,
     heatmapBlur: 0.85,
     viewType: actions.VIEW_TYPE_MOVEMENTS,
-    mouseMovementsData: {},
-    mouseClicksData: {},
-    heatmapConfig: null
+    mouseMovements: null,
+    mouseClicks: null,
+    heatmapConfig: null,
+    fetchingMouseData: false
 };
 
 export default function heatmapDetail(state = initialState, action) {
@@ -43,12 +45,28 @@ export default function heatmapDetail(state = initialState, action) {
 
         case actions.HEATMAP_OPACITY:
             return Object.assign({}, state, {
-                heatmapOpacity: action.opacity
+                heatmapOpacityMin: action.opacityMin,
+                heatmapOpacityMax: action.opacityMax
             });
 
         case actions.SET_CONFIG:
             return Object.assign({}, state, {
                 heatmapConfig: action.config
+            });
+
+        case actions.GET_HEATMAP_DATA_SUCCESS:
+            return Object.assign({}, state, {
+                mouseMovements: action.mouseMovements,
+                mouseClicks: action.mouseClicks,
+                fetchingMouseData: false
+            });
+        case actions.GET_HEATMAP_DATA_START:
+            return Object.assign({}, state, {
+                fetchingMouseData: true
+            });
+        case actions.GET_HEATMAP_DATA_FAIL:
+            return Object.assign({}, state, {
+                fetchingMouseData: false
             });
 
         default:

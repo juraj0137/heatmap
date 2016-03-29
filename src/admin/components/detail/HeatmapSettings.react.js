@@ -15,7 +15,8 @@ class HeatmapSettings extends React.Component {
         this.state = {
             renderSettingsVisible: false,
             heatmapRadius: props.heatmapRadius,
-            heatmapOpacity: props.heatmapOpacity,
+            heatmapOpacityMax: props.heatmapOpacityMax,
+            heatmapOpacityMin: props.heatmapOpacityMin,
             heatmapBlur: props.heatmapBlur
         };
 
@@ -109,10 +110,10 @@ class HeatmapSettings extends React.Component {
                 this.props.dispatch(setRadius(this.state.heatmapRadius));
             },
             onChangeOpacity = (component, value)=> {
-                this.setState({heatmapOpacity: value});
+                this.setState({heatmapOpacityMax: value.max, heatmapOpacityMin: value.min});
             },
             onChangeOpacityComplete = ()=> {
-                this.props.dispatch(setOpacity(this.state.heatmapOpacity));
+                this.props.dispatch(setOpacity(this.state.heatmapOpacityMin, this.state.heatmapOpacityMax));
             },
             onChangeBlur = (component, value)=> {
                 this.setState({heatmapBlur: value});
@@ -121,13 +122,18 @@ class HeatmapSettings extends React.Component {
                 this.props.dispatch(setBlur(this.state.heatmapBlur));
             };
 
+        let opacityValue = {
+            min: this.state.heatmapOpacityMin,
+            max: this.state.heatmapOpacityMax
+        }
+
         return (
             <div className="render-settings-wrapper" style={wrapperStyle}>
                 <label>Radius:</label>
                 <InputRange minValue={10} maxValue={100} step={1} value={this.state.heatmapRadius}
                             onChange={onChangeRadius} onChangeComplete={onChangeRadiusComplete}/>
                 <label>Opacity:</label>
-                <InputRange minValue={0} maxValue={1} step={0.01} value={this.state.heatmapOpacity}
+                <InputRange minValue={0} maxValue={1} step={0.01} value={opacityValue}
                             onChange={onChangeOpacity} onChangeComplete={onChangeOpacityComplete}/>
                 <label>Blur:</label>
                 <InputRange minValue={0} maxValue={1} step={0.01} value={this.state.heatmapBlur}

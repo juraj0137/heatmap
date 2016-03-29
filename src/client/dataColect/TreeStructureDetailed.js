@@ -12,9 +12,6 @@ class TreeStructureDetailed {
     }
 
     mergeData(newData) {
-
-        console.log('--- mergujem ---');
-        //debugger;
         this._traversMerge(this.collectedData, newData);
     }
 
