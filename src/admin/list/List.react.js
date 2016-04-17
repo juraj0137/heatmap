@@ -29,7 +29,10 @@ class ViewList extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchHeatmaps();
+        let {lastReload} = this.props.heatmaps;
+        if (lastReload == null || ((new Date() - lastReload) > 10 * 60 * 1000)) {
+            this.fetchHeatmaps();
+        }
     }
 
     fetchHeatmaps() {
@@ -110,7 +113,7 @@ class ViewList extends React.Component {
 
     //@todo refactor
     renderTableRows() {
-        return this.props.heatmaps.filter((item)=> {
+        return this.props.heatmaps.heatmaps.filter((item)=> {
             return item instanceof Heatmap;
         }).map((item, i)=> {
 
@@ -249,7 +252,7 @@ class ViewList extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        heatmaps: state.heatmaps.heatmaps
+        heatmaps: state.heatmaps
     };
 }
 

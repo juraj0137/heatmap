@@ -69,6 +69,12 @@ export default function heatmapDetail(state = initialState, action) {
                 fetchingMouseData: false
             });
 
+        case actions.HEATMAP_DATA_RESET:
+            return Object.assign({}, state, {
+                mouseMovements: null,
+                mouseClicks: null
+            });
+
         default:
             return state;
     }

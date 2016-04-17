@@ -13,6 +13,8 @@ export const GET_HEATMAP_DATA_START = 'GET_HEATMAP_DATA_START';
 export const GET_HEATMAP_DATA_SUCCESS = 'GET_HEATMAP_DATA_SUCCESS';
 export const GET_HEATMAP_DATA_FAIL = 'GET_HEATMAP_DATA_FAIL';
 
+export const HEATMAP_DATA_RESET = 'HEATMAP_DATA_RESET';
+
 export const SET_CONFIG = 'SET_CONFIG';
 
 export function setWidth(width) {
@@ -111,6 +113,12 @@ function getHeatmapDataFail(error) {
         error
     };
 }
+export function resetHeatmapData(){
+    return {
+        type: HEATMAP_DATA_RESET
+    };
+}
+
 
 export function setConfig(config){
     return {

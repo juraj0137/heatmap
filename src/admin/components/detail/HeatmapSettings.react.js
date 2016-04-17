@@ -151,7 +151,7 @@ class HeatmapSettings extends React.Component {
                     {this.renderHeatmapType()}
                     {this.renderRenderSettingsButton()}
                     <Button bsStyle="success" className="show-heatmap pull-right"
-                            onClick={this.handleRefreshHeatmap}>Aktualizuj heatmapu</Button>
+                            onClick={this.handleRefreshHeatmap}>Prekresli heatmapu</Button>
                     <div className="clearfix"></div>
                 </div>
                 <div className="row">

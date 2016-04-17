@@ -6,7 +6,7 @@ import jquery from "jquery";
 import { connect } from 'react-redux';
 import {HeatmapUtils} from "./../../common/utils.js";
 import {TreeStructureDetailed} from  "./../../client/dataColect/TreeStructureDetailed.js";
-import {setHeight, setWidth, setConfig, getHeatmapDataIfNeeded} from './../detail/actions.js';
+import {setHeight, setWidth, setConfig, getHeatmapDataIfNeeded, resetHeatmapData} from './../detail/actions.js';
 import {getHeatmap} from './../list/actions.js';
 
 import HeatmapSettings from './../components/detail/HeatmapSettings.react.js';
@@ -19,8 +19,6 @@ class ViewDetail extends React.Component {
         let self = this;
 
         this.state = {
-            mouseMovementsRaw: null,
-            mouseClicksRaw: null,
             mouseMovementsProcessed: null,
             mouseClicksProcessed: null,
             pageLoaded: false,
@@ -60,6 +58,10 @@ class ViewDetail extends React.Component {
         this.handleOnPageLoad();
     }
 
+    componentWillUnmount(){
+        this.props.dispatch(resetHeatmapData());
+    }
+
     handleOnPageLoad() {
         var iframe = this.refs['page'].getElementsByTagName('iframe')[0];
         iframe.addEventListener("load", () => {
@@ -92,6 +94,8 @@ class ViewDetail extends React.Component {
                     maxOpacity: this.props.detail.heatmapOpacityMax,
                     minOpacity: this.props.detail.heatmapOpacityMin
                 });
+                document.getElementsByClassName('heatmap-canvas')[0].style.zIndex = 100000;
+                console.log(this.heatmap);
             }
         }
     }
@@ -108,8 +112,6 @@ class ViewDetail extends React.Component {
     renderHeatmap() {
 
         let heatmapData = this.processHeatmapData();
-
-        console.log(heatmapData);
 
         if (this.heatmap != null) {
             this.heatmap.setData({

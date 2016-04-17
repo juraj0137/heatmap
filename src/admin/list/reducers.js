@@ -90,7 +90,7 @@ export default function heatmaps(state = initialState, action) {
             return Object.assign({}, state, {
                 isFetching: false,
                 heatmaps: action.heatmaps,
-                lastUpdated: action.receivedAt,
+                lastReload: action.receivedAt,
                 error: null
             })
         }

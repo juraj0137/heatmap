@@ -113,7 +113,7 @@ function fetchHeatmapsSuccess(json) {
     return {
         type: HEATMAPS_FETCH_SUCCESS,
         heatmaps: heatmaps,
-        receivedAt: Date.now()
+        receivedAt: new Date()
     };
 }
 function fetchHeatmapsFail(error) {
