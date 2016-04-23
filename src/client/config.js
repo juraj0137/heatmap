@@ -9,5 +9,6 @@ const configHeatmap = {
     population: 100, // percent
     apiUrl: "http://localhost:8080/api/visit"
 };
+    //apiUrl: "http://heatmaphub.com/api/visit"
 
 export {configHeatmap};

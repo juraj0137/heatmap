@@ -2,12 +2,15 @@
  * Created by juraj on 12.03.2016.
  */
 
+import {TreeStructureDetailedClient} from  './TreeStructureDetailedClient.js';
 import {ElementPath, ELEMENT_JOINER, ELEMENT_POSITION_SEPARATOR} from './../../common/elementPath';
 import {HeatmapUtils} from './../../common/utils';
 
-class TreeStructureDetailed {
+class TreeStructureDetailed extends TreeStructureDetailedClient {
 
     constructor(data) {
+
+        super();
         this.collectedData = data != undefined ? data : {};
     }
 
@@ -15,16 +18,31 @@ class TreeStructureDetailed {
         this._traversMerge(this.collectedData, newData);
     }
 
-    _mergePoints(data, newData){
-        if (data.points === undefined) {
-            data.points = newData.points;
+    _mergeMovements(data, newData) {
+        if (data.movements === undefined) {
+            data.movements = newData.movements;
         } else {
-            for (let i in newData.points) {
-                if (newData.points.hasOwnProperty(i)) {
-                    if (data.points[i] !== undefined)
-                        data.points[i] = 0;
+            for (let i in newData.movements) {
+                if (newData.movements.hasOwnProperty(i)) {
+                    if (data.movements[i] !== undefined)
+                        data.movements[i] = 0;
 
-                    data.points[i] += newData.points[i];
+                    data.movements[i] += newData.movements[i];
+                }
+            }
+        }
+    }
+
+    _mergeClicks(data, newData) {
+        if (data.clicks === undefined) {
+            data.clicks = newData.clicks;
+        } else {
+            for (let i in newData.clicks) {
+                if (newData.clicks.hasOwnProperty(i)) {
+                    if (data.clicks[i] !== undefined)
+                        data.clicks[i] = 0;
+
+                    data.clicks[i] += newData.clicks[i];
                 }
             }
         }
@@ -43,18 +61,23 @@ class TreeStructureDetailed {
             }
 
             // ak su definovane body pohybu
-            if (newData[key].points !== undefined) {
-                this._mergePoints(data[key], newData[key]);
+            if (newData[key].movements !== undefined) {
+                this._mergeMovements(data[key], newData[key]);
             }
 
-            if(newData[key].elements !== undefined){
-                for(let i in newData[key].elements){
-                    if(newData[key].elements.hasOwnProperty(i)){
-                        let newElm = newData[key].elements[i];
-                        if(data[key].elements[i] == undefined){
-                            data[key].elements[i] = newElm;
-                        }else{
-                            this._traversMerge(data[key].elements[i].elements, newElm.elements)
+            // ak su definovane body klikania
+            if (newData[key].clicks !== undefined) {
+                this._mergeClicks(data[key], newData[key]);
+            }
+
+            if (newData[key].children !== undefined) {
+                for (let i in newData[key].children) {
+                    if (newData[key].children.hasOwnProperty(i)) {
+                        let newElm = newData[key].children[i];
+                        if (data[key].children[i] == undefined) {
+                            data[key].children[i] = newElm;
+                        } else {
+                            this._traversMerge(data[key].children[i].children, newElm.children)
                         }
                     }
                 }
@@ -62,50 +85,6 @@ class TreeStructureDetailed {
 
         }
     }
-
-    increment(event) {
-
-        let attentionInElement = HeatmapUtils.getElementAttentionArea(event);
-        let elements = event.path != undefined ? event.path : HeatmapUtils.getEventPath(event);
-        elements = elements.reverse().slice(3);
-
-
-        let subtree = this.collectedData;
-
-        for (let i = 0; i < elements.length; i++) {
-
-            let elm = elements[i];
-
-            let position = HeatmapUtils.getPositionBetweenSiblings(elm);
-            let key = elm.tagName + '' + ELEMENT_POSITION_SEPARATOR + '' + position;
-
-            let attentionKey = attentionInElement.x + '' + attentionInElement.y;
-
-            if (subtree[key] == undefined) {
-                subtree[key] = {elements: {}};
-                if (i == (elements.length - 1)) {
-                    subtree[key].points = {};
-                }
-            }
-
-            if (i == (elements.length - 1)) {
-
-                if (subtree[key].points == undefined) {
-                    subtree[key].points = {};
-                }
-
-                if (subtree[key].points[attentionKey] == undefined) {
-                    subtree[key].points[attentionKey] = 1;
-                } else {
-                    subtree[key].points[attentionKey]++;
-                }
-
-            } else {
-                subtree = subtree[key].elements;
-            }
-        }
-    }
-
 
     _traversTree(element, domElements) {
 
@@ -115,6 +94,7 @@ class TreeStructureDetailed {
                 if (element.hasOwnProperty(key) === false)
                     continue;
 
+
                 let splitKey = key.split(ELEMENT_POSITION_SEPARATOR),
                     children = domElements.slice(0).pop().children,
                     currentElm = Object.keys(children).filter((key)=> {
@@ -123,38 +103,69 @@ class TreeStructureDetailed {
                         return children[key];
                     })[splitKey[1]];
 
-                if (currentElm == undefined)
+                if (currentElm == undefined) {
                     continue;
-
-                if (typeof element[key].elements == "object") {
-
-                    domElements.push(currentElm);
-                    this._traversTree(element[key].elements, domElements);
-
                 }
 
-                if (element[key].points !== undefined) {
+                // ak je element skryty, preskocime vyratavanie bodov na vykreslovanie
+                if (getComputedStyle(currentElm).getPropertyValue("display") == 'none') {
+                    continue;
+                }
+
+                if (typeof element[key].children == "object") {
+                    domElements.push(currentElm);
+                    this._traversTree(element[key].children, domElements);
+                }
+
+
+                if (element[key].movements !== undefined) {
 
                     // pridame vsetky body siete v elemente
                     // element je rozdeleny na siet 10x10
-                    for (let attentioKey in element[key].points) {
+                    for (let attentioKey in element[key].movements) {
 
-                        if (element[key].points.hasOwnProperty(attentioKey) === false) {
+                        if (element[key].movements.hasOwnProperty(attentioKey) === false) {
                             continue;
                         }
+
 
                         let k = attentioKey.toString();
                         let elmPosition = HeatmapUtils.getElementAttentionAreaPosition(currentElm, k[0], k[1], domElements[0]);
 
                         // pridame data na vykraslenie heatmapy
-                        this.heatmapData.points.push({
-                            x: elmPosition.x, // x coordinate of the datapoint, a number
-                            y: elmPosition.y, // y coordinate of the datapoint, a number
-                            value: element[key].points[attentioKey] // the value at datapoint(x,
-                        });
+                        if (!isNaN(elmPosition.x) && !isNaN(elmPosition.y)) {
+                            this.heatmapData.movements.push({
+                                x: elmPosition.x, // x coordinate of the datapoint, a number
+                                y: elmPosition.y, // y coordinate of the datapoint, a number
+                                value: element[key].movements[attentioKey] // the value at datapoint(x,
+                            });
+                        }
+                    }
+                }
 
-                        this.heatmapData.max = Math.max(this.heatmapData.max, element[key].points[attentioKey]);
-                        this.heatmapData.min = Math.min(this.heatmapData.min, element[key].points[attentioKey]);
+                if (element[key].clicks !== undefined) {
+
+                    // pridame vsetky body siete v elemente
+                    // element je rozdeleny na siet 10x10
+                    for (let attentioKey in element[key].clicks) {
+
+                        if (element[key].clicks.hasOwnProperty(attentioKey) === false) {
+                            continue;
+                        }
+
+
+                        let k = attentioKey.toString();
+                        let elmPosition = HeatmapUtils.getElementAttentionAreaPosition(currentElm, k[0], k[1], domElements[0]);
+
+                        // pridame data na vykraslenie heatmapy
+                        if (!isNaN(elmPosition.x) && !isNaN(elmPosition.y)) {
+
+                            this.heatmapData.clicks.push({
+                                x: elmPosition.x, // x coordinate of the datapoint, a number
+                                y: elmPosition.y, // y coordinate of the datapoint, a number
+                                value: element[key].clicks[attentioKey] // the value at datapoint(x,
+                            });
+                        }
                     }
                 }
             }
@@ -162,23 +173,86 @@ class TreeStructureDetailed {
         }
     }
 
+    mapReduceData() {
+        let data = this.reduceArray(this.heatmapData.movements);
+        this.heatmapData.movements = data.data;
+        this.heatmapData.maxMovements = data.max;
+        this.heatmapData.minMovements = data.min;
+
+        data = this.reduceArray(this.heatmapData.clicks);
+        this.heatmapData.clicks = data.data;
+        this.heatmapData.maxClicks = data.max;
+        this.heatmapData.minClicks = data.min;
+    }
+
+    reduceArray(array) {
+        let xGranularity = 10;
+        let yGranularity = 4;
+
+        let result = {
+            data: [],
+            min: 99999999,
+            max: 0
+        };
+
+        /* array je array skladajuci sa z
+         * Object{
+         *    value:7
+         *    x:1683
+         *    y:423
+         * }
+         */
+        let reducedMovements = array.reduce((acc, val) => {
+            let x = (Math.round((val.x) / xGranularity) * xGranularity) + (xGranularity / 2);
+            let y = (Math.round((val.y) / yGranularity) * yGranularity) + (yGranularity / 2);
+
+            if (acc[x + "|" + y] == undefined)
+                acc[x + "|" + y] = 0;
+
+            acc[x + "|" + y] += val.value;
+            acc['min'] = Math.min(acc['min'], acc[x + "|" + y]);
+            acc['max'] = Math.max(acc['max'], acc[x + "|" + y]);
+
+            return acc;
+        }, {min: 9999999, max: 0});
+
+        result.max = reducedMovements.max;
+        result.min = reducedMovements.min;
+        delete reducedMovements.max;
+        delete reducedMovements.min;
+
+        result.data = Object.keys(reducedMovements).map(key => {
+            let splittedKey = key.split('|');
+            return {
+                value: reducedMovements[key],
+                x: splittedKey[0],
+                y: splittedKey[1]
+            }
+        });
+        return result;
+    }
 
     getDataForHeatmap(doc) {
 
         let DOMElements = [doc != undefined ? doc : document.documentElement];
-        if(doc != undefined){
+        if (doc != undefined) {
             DOMElements.push(doc.getElementsByTagName('html')[0]);
         }
 
         this.heatmapData = {
-            points: [],
-            min: 100000,
-            max: 0
+            movements: [],
+            minMovements: 100000,
+            maxMovements: 0,
+            clicks: [],
+            minClicks: 100000,
+            maxClicks: 0
         };
 
         if (typeof this.collectedData == "object") {
             this._traversTree(this.collectedData, DOMElements);
         }
+
+        this.mapReduceData();
 
         return this.heatmapData;
 
