@@ -77,7 +77,7 @@ class HeatmapSettings extends React.Component {
                 <ButtonGroup>
                     <Button active={this.props.viewType == VIEW_TYPE_MOVEMENTS} data-type={VIEW_TYPE_MOVEMENTS}
                             onClick={this.handleChangeViewType}>Pohyb</Button>
-                    <Button active={this.props.viewType == VIEW_TYPE_CLICKS} data-type={VIEW_TYPE_CLICKS} disabled
+                    <Button active={this.props.viewType == VIEW_TYPE_CLICKS} data-type={VIEW_TYPE_CLICKS}
                             onClick={this.handleChangeViewType}>Klikanie</Button>
                 </ButtonGroup>
             </div>
@@ -106,20 +106,20 @@ class HeatmapSettings extends React.Component {
         let onChangeRadius = (component, value)=> {
                 this.setState({heatmapRadius: value});
             },
-            onChangeRadiusComplete = ()=> {
-                this.props.dispatch(setRadius(this.state.heatmapRadius));
+            onChangeRadiusComplete = (component, value)=> {
+                this.props.dispatch(setRadius(value));
             },
             onChangeOpacity = (component, value)=> {
                 this.setState({heatmapOpacityMax: value.max, heatmapOpacityMin: value.min});
             },
-            onChangeOpacityComplete = ()=> {
-                this.props.dispatch(setOpacity(this.state.heatmapOpacityMin, this.state.heatmapOpacityMax));
+            onChangeOpacityComplete = (component, value)=> {
+                this.props.dispatch(setOpacity(value.min, value.max));
             },
             onChangeBlur = (component, value)=> {
                 this.setState({heatmapBlur: value});
             },
-            onChangeBlurComplete = ()=> {
-                this.props.dispatch(setBlur(this.state.heatmapBlur));
+            onChangeBlurComplete = (component, value)=> {
+                this.props.dispatch(setBlur(value));
             };
 
         let opacityValue = {

@@ -6,7 +6,7 @@ import jquery from "jquery";
 import { connect } from 'react-redux';
 import {HeatmapUtils} from "./../../common/utils.js";
 import {TreeStructureDetailed} from  "./../../client/dataColect/TreeStructureDetailed.js";
-import {setHeight, setWidth, setConfig, getHeatmapDataIfNeeded, resetHeatmapData} from './../detail/actions.js';
+import {setHeight, setWidth, setConfig, getHeatmapDataIfNeeded, resetHeatmapData, VIEW_TYPE_CLICKS, VIEW_TYPE_MOVEMENTS} from './../detail/actions.js';
 import {getHeatmap} from './../list/actions.js';
 
 import HeatmapSettings from './../components/detail/HeatmapSettings.react.js';
@@ -19,8 +19,7 @@ class ViewDetail extends React.Component {
         let self = this;
 
         this.state = {
-            mouseMovementsProcessed: null,
-            mouseClicksProcessed: null,
+            heatmapData: null,
             pageLoaded: false,
             heatmapRendered: false
         };
@@ -46,19 +45,23 @@ class ViewDetail extends React.Component {
     }
 
     loadHeatmapData(heatmapId) {
-        if (heatmapId != undefined && this.props.detail.mouseMovements == null) {
+        if (heatmapId != undefined && this.props.detail.heatmapData == null) {
             this.props.dispatch(getHeatmapDataIfNeeded(heatmapId));
         }
     }
 
     componentDidMount() {
-        this.props.dispatch(setWidth(1200));
-        this.props.dispatch(setHeight(660));
+        let self = this;
+        window.addEventListener('load',function(){
+            self.props.dispatch(setWidth(document.getElementsByClassName('heatmap-detail')[0].clientWidth - 20));
+            self.props.dispatch(setHeight(document.getElementsByClassName('heatmap-detail')[0].clientHeight - 185));
+        });
+
 
         this.handleOnPageLoad();
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         this.props.dispatch(resetHeatmapData());
     }
 
@@ -77,7 +80,7 @@ class ViewDetail extends React.Component {
             }
 
             this.initHeatmapObject(doc);
-            if (this.props.detail.mouseMovements != null) {
+            if (this.props.detail.heatmapData != null) {
                 this.renderHeatmap();
             }
             this.setState({pageLoaded: true});
@@ -95,7 +98,6 @@ class ViewDetail extends React.Component {
                     minOpacity: this.props.detail.heatmapOpacityMin
                 });
                 document.getElementsByClassName('heatmap-canvas')[0].style.zIndex = 100000;
-                console.log(this.heatmap);
             }
         }
     }
@@ -106,41 +108,43 @@ class ViewDetail extends React.Component {
         if (doc.document) {
             doc = doc.document;
         }
-        return this.props.detail.mouseMovements.getDataForHeatmap(doc)
+        return this.props.detail.heatmapData.getDataForHeatmap(doc)
     }
 
-    renderHeatmap() {
+    renderHeatmap(type) {
 
         let heatmapData = this.processHeatmapData();
 
         if (this.heatmap != null) {
+            type = type == undefined ? this.props.detail.viewType : type;
             this.heatmap.setData({
-                max: heatmapData.max,
-                min: heatmapData.min,
-                data: heatmapData.points
+                max: type == VIEW_TYPE_MOVEMENTS ? heatmapData.maxMovements : heatmapData.maxClicks,
+                min: type == VIEW_TYPE_MOVEMENTS ? heatmapData.minMovements : heatmapData.minClicks,
+                data: type == VIEW_TYPE_MOVEMENTS ? heatmapData.movements : heatmapData.clicks
             });
         }
 
         this.setState({
-            mouseMovementsProcessed: heatmapData,
+            heatmapData: heatmapData,
             heatmapRendered: true
         });
     }
 
     componentWillReceiveProps(nextProps) {
 
-        let {heatmapRadius, heatmapBlur, heatmapOpacityMax,heatmapOpacityMin } = nextProps.detail;
+        let {heatmapRadius, heatmapBlur, heatmapOpacityMax,heatmapOpacityMin, viewType } = nextProps.detail;
         let {heatmap} = this;
 
         // zmena configu heatmapy (blur, radius, opacity)
         if (heatmap != null) {
             if (this.props.detail.heatmapRadius !== heatmapRadius) {
                 heatmap._store._cfgRadius = heatmapRadius;
-                let heatmapData = this.state.mouseMovementsProcessed;
+                let heatmapData = this.state.heatmapData;
+                let type = this.props.detail.viewType;
                 heatmap.setData({
-                    max: heatmapData.max,
-                    min: heatmapData.min,
-                    data: heatmapData.points
+                    max: type == VIEW_TYPE_MOVEMENTS ? heatmapData.maxMovements : heatmapData.maxClicks,
+                    min: type == VIEW_TYPE_MOVEMENTS ? heatmapData.minMovements : heatmapData.minClicks,
+                    data: type == VIEW_TYPE_MOVEMENTS ? heatmapData.movements : heatmapData.clicks
                 });
             }
             if (this.props.detail.heatmapBlur !== heatmapBlur ||
@@ -148,14 +152,14 @@ class ViewDetail extends React.Component {
                 this.props.detail.heatmapOpacityMin !== heatmapOpacityMin) {
                 heatmap._renderer._templates = {};
                 heatmap.configure({
-                    minOpacity : heatmapOpacityMin,
-                    maxOpacity : heatmapOpacityMax,
+                    minOpacity: heatmapOpacityMin,
+                    maxOpacity: heatmapOpacityMax,
                     blur: heatmapBlur
                 });
             }
         }
 
-        // ak nemame nastaveny zakladnu konfiguraciu heatmapy, pokusime sa ju najst a nastavit
+        // ak nemame nastavenu zakladnu konfiguraciu heatmapy, pokusime sa ju najst a nastavit
         if (this.props.detail.heatmapConfig == null) {
             let config = nextProps.heatmaps.filter(item => {
                 return item.id == nextProps.params.id; //this.props.params.id is from url
@@ -166,7 +170,11 @@ class ViewDetail extends React.Component {
             }
         }
 
-        if (this.props.detail.mouseMovements != null && this.state.heatmapRendered == false) {
+        if (this.props.detail.viewType != viewType) {
+            this.renderHeatmap(viewType);
+        }
+
+        if (this.props.detail.heatmapData != null && this.state.heatmapRendered == false) {
             this.renderHeatmap();
         }
     }
@@ -180,7 +188,7 @@ class ViewDetail extends React.Component {
             act++;
         }
 
-        if (this.props.detail.mouseMovements != null) {
+        if (this.props.detail.heatmapData != null) {
             act++;
         }
 
@@ -192,9 +200,9 @@ class ViewDetail extends React.Component {
             act++;
         }
 
-        if(max == act){
+        if (max == act) {
             style = 'success';
-            setTimeout(()=>{
+            setTimeout(()=> {
                 this.refs['loadingBar'].style.display = 'none'
             }, 1500);
         }
@@ -219,7 +227,7 @@ class ViewDetail extends React.Component {
         }
 
         return (
-            <div className="row">
+            <div className="row last">
                 <div className="col-lg-12 iframe-wrapper" ref="page">
                     <iframe src={`/api/scrapper?snapshotUrl=${scrapperUrl}`} style={iframeCss}></iframe>
                 </div>

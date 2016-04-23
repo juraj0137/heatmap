@@ -87,7 +87,7 @@ function getHeatmapData(heatmapId, success, error) {
 }
 export function getHeatmapDataIfNeeded(heatmapId, success, error) {
     return (dispatch, getState) => {
-        if (getState().heatmapDetail.fetchingMouseData == false) {
+        if (getState().heatmapDetail.fetchingHeatmapData == false) {
             dispatch(getHeatmapData(heatmapId, success, error))
         }
     }
@@ -98,13 +98,11 @@ function getHeatmapDataStart() {
     };
 }
 function getHeatmapDataSuccess(json) {
-    let movements = new TreeStructureDetailed(json.mouseMovements != undefined ? json.mouseMovements : {});
-    let clicks = new TreeStructureDetailed(json.mouseClicks != undefined ? json.mouseClicks : {});
+    let heatmapData = new TreeStructureDetailed(json.heatmapData != undefined ? json.heatmapData : {});
 
     return {
         type: GET_HEATMAP_DATA_SUCCESS,
-        mouseMovements: movements,
-        mouseClicks: clicks
+        heatmapData: heatmapData
     };
 }
 function getHeatmapDataFail(error) {

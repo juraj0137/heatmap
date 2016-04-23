@@ -97,9 +97,7 @@ class ViewList extends React.Component {
                 <thead>
                 <tr>
                     <th className="col-order">#</th>
-                    <th className="col-status text-center">Status</th>
                     <th>Názov</th>
-                    <th className="col-pageviews text-center">Pageviews</th>
                     <th className="col-time text-center">Vytvorené</th>
                     <th className="col-actions">Akcie</th>
                 </tr>
@@ -194,23 +192,23 @@ class ViewList extends React.Component {
                 matchStrings = item.matchStrings[0];
             }
 
+                    //<td className="text-center">{status}</td>
+                    //<td className="text-center">{item.pageViews}</td>
+                    //    {statusButton}
             return (
                 <tr key={i} className={bgStyle} data-heatmap-id={item.id}>
                     <td>{i + 1}.</td>
-                    <td className="text-center">{status}</td>
                     <td>
                         <div className="heatmap-title">{item.title}</div>
                         <div className="heatmap-match-string">{matchStrings}</div>
                     </td>
-                    <td className="text-center">{item.pageViews}</td>
-                    <td className="text-center">{dateformat(item.created.toString(), "dd.mm.yyyy - h:MM")}</td>
+                    <td className="text-center">{dateformat(item.created.toString(), "dd.mm.yyyy - HH:MM")}</td>
                     <td>
                         <Link to={`/detail/${item.id}`}>
                             <Button bsStyle="success" bsSize="small">
                                 Zobraziť
                             </Button>
                         </Link>
-                        {statusButton}
                         <Button bsStyle="warning" bsSize="small" onClick={()=>{self.editHeatmap(item)}}>Upraviť</Button>
                     </td>
                 </tr>

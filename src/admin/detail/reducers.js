@@ -3,15 +3,14 @@ import * as actions from './actions';
 const initialState = {
     heatmapWidth: 320,
     heatmapHeight: 500,
-    heatmapRadius: 40,
-    heatmapOpacityMax: 9.99,
+    heatmapRadius: 50,
+    heatmapOpacityMax: 0.80,
     heatmapOpacityMin: 0.01,
-    heatmapBlur: 0.85,
+    heatmapBlur: 0.99,
     viewType: actions.VIEW_TYPE_MOVEMENTS,
-    mouseMovements: null,
-    mouseClicks: null,
+    heatmapData: null,
     heatmapConfig: null,
-    fetchingMouseData: false
+    fetchingHeatmapData: false
 };
 
 export default function heatmapDetail(state = initialState, action) {
@@ -56,23 +55,21 @@ export default function heatmapDetail(state = initialState, action) {
 
         case actions.GET_HEATMAP_DATA_SUCCESS:
             return Object.assign({}, state, {
-                mouseMovements: action.mouseMovements,
-                mouseClicks: action.mouseClicks,
-                fetchingMouseData: false
+                heatmapData: action.heatmapData,
+                fetchingHeatmapData: false
             });
         case actions.GET_HEATMAP_DATA_START:
             return Object.assign({}, state, {
-                fetchingMouseData: true
+                fetchingHeatmapData: true
             });
         case actions.GET_HEATMAP_DATA_FAIL:
             return Object.assign({}, state, {
-                fetchingMouseData: false
+                fetchingHeatmapData: false
             });
 
         case actions.HEATMAP_DATA_RESET:
             return Object.assign({}, state, {
-                mouseMovements: null,
-                mouseClicks: null
+                heatmapData: null
             });
 
         default:

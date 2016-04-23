@@ -24,7 +24,7 @@ class Topbar extends React.Component {
                 <ul className="nav navbar-top-links navbar-right">
                     <li className="dropdown">
                         <a className="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Kvakuan<i className="fa fa-user fa-fw"/> <i className="fa fa-caret-down"/>
+                            Login<i className="fa fa-user fa-fw"/> <i className="fa fa-caret-down"/>
                         </a>
                         <ul className="dropdown-menu dropdown-user">
                             <li>
