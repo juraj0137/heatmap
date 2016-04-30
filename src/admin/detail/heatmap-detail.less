@@ -1,21 +1,27 @@
 .heatmap-detail {
   height: 100%;
 
-  .iframe-wrapper {
+  .iframe-bgr{
     background-color: darkgray;
     height: 100%;
+    width: 100%;
+  }
+
+  .iframe-wrapper {
+    height: 500px;
+    width: 320px;
+    margin: 2px auto 0;
+    border: 1px dashed silver;
+    box-sizing: content-box;
+    padding: 2px 2px 0 2px;
+    border-bottom: none;
   }
 
   iframe {
-    height: 500px;
-    width: 320px;
-    margin: 10px auto;
     display: block;
-    border: 1px dashed silver;
-    box-sizing: content-box;
-
-    padding: 2px;
-
+    width: 100%;
+    height: 100%;
+    border: none;
     &::-webkit-scrollbar {
       display: none;
     }

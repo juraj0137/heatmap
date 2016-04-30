@@ -2,10 +2,22 @@ import "./settings.less";
 import "react-input-range/dist/react-input-range.min.css";
 import React from "react";
 import InputRange from 'react-input-range';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import {Input, ButtonGroup, Button} from "react-bootstrap";
 
-import {setHeight, setWidth, setViewTypeClicks, setViewTypeMovements, setRadius, setOpacity, setBlur, VIEW_TYPE_CLICKS, VIEW_TYPE_MOVEMENTS} from './../../detail/actions.js';
+import {
+    setHeight,
+    setWidth,
+    setViewTypeClicks,
+    setViewTypeMovements,
+    setRadius,
+    setOpacity,
+    setBlur,
+    cropEnable,
+    cropSetParams,
+    VIEW_TYPE_CLICKS,
+    VIEW_TYPE_MOVEMENTS
+} from './../../detail/actions.js';
 
 class HeatmapSettings extends React.Component {
 
@@ -98,6 +110,18 @@ class HeatmapSettings extends React.Component {
         );
     }
 
+    renderCropButton() {
+        let handleClick = () => {
+            this.props.dispatch(cropEnable(!this.props.crop.enable));
+        };
+
+        return (
+            <Button className="render-settings-button" active={this.props.crop.enable} onClick={handleClick}>
+                Orezanie
+            </Button>
+        );
+    }
+
     renderRenderSettings() {
         let wrapperStyle = {
             display: this.state.renderSettingsVisible ? 'block' : 'none'
@@ -150,6 +174,7 @@ class HeatmapSettings extends React.Component {
                     {this.renderDimmensions()}
                     {this.renderHeatmapType()}
                     {this.renderRenderSettingsButton()}
+                    {this.renderCropButton()}
                     <Button bsStyle="success" className="show-heatmap pull-right"
                             onClick={this.handleRefreshHeatmap}>Prekresli heatmapu</Button>
                     <div className="clearfix"></div>

@@ -2,14 +2,21 @@ import "./heatmap-detail.less";
 import heatmapRenderer from "heatmap.js";
 import React from "react";
 import {ProgressBar} from "react-bootstrap";
-import jquery from "jquery";
-import { connect } from 'react-redux';
-import {HeatmapUtils} from "./../../common/utils.js";
-import {TreeStructureDetailed} from  "./../../client/dataColect/TreeStructureDetailed.js";
-import {setHeight, setWidth, setConfig, getHeatmapDataIfNeeded, resetHeatmapData, VIEW_TYPE_CLICKS, VIEW_TYPE_MOVEMENTS} from './../detail/actions.js';
+import {connect} from 'react-redux';
+import {
+    setHeight,
+    setWidth,
+    setConfig,
+    getHeatmapDataIfNeeded,
+    resetHeatmapData,
+    cropSetParams,
+    VIEW_TYPE_CLICKS,
+    VIEW_TYPE_MOVEMENTS
+} from './../detail/actions.js';
 import {getHeatmap} from './../list/actions.js';
 
 import HeatmapSettings from './../components/detail/HeatmapSettings.react.js';
+import Cropper from './../components/detail/Cropper.react.js';
 
 class ViewDetail extends React.Component {
 
@@ -52,9 +59,9 @@ class ViewDetail extends React.Component {
 
     componentDidMount() {
         let self = this;
-        window.addEventListener('load',function(){
+        window.addEventListener('load', function () {
             self.props.dispatch(setWidth(document.getElementsByClassName('heatmap-detail')[0].clientWidth - 20));
-            self.props.dispatch(setHeight(document.getElementsByClassName('heatmap-detail')[0].clientHeight - 185));
+            self.props.dispatch(setHeight(document.getElementsByClassName('heatmap-detail')[0].clientHeight - 165));
         });
 
 
@@ -108,11 +115,10 @@ class ViewDetail extends React.Component {
         if (doc.document) {
             doc = doc.document;
         }
-        return this.props.detail.heatmapData.getDataForHeatmap(doc)
+        return this.props.detail.heatmapData.getDataForRender(doc)
     }
 
     renderHeatmap(type) {
-
         let heatmapData = this.processHeatmapData();
 
         if (this.heatmap != null) {
@@ -132,7 +138,72 @@ class ViewDetail extends React.Component {
 
     componentWillReceiveProps(nextProps) {
 
-        let {heatmapRadius, heatmapBlur, heatmapOpacityMax,heatmapOpacityMin, viewType } = nextProps.detail;
+        let {viewType} = nextProps.detail;
+        let {heatmap} = this;
+
+        this.handleBlurOpacitRadius(nextProps);
+        this.handleCrop(nextProps);
+
+        // ak nemame nastavenu zakladnu konfiguraciu heatmapy, pokusime sa ju najst a nastavit
+        if (this.props.detail.heatmapConfig == null) {
+            let config = nextProps.heatmaps.filter(item => {
+                return item.id == nextProps.params.id; //this.props.params.id is from url
+            }).pop();
+            if (config !== undefined) {
+                nextProps.dispatch(setConfig(config));
+                this.loadHeatmapData(config.id);
+            }
+        }
+
+        if (this.props.detail.viewType != viewType) {
+            this.renderHeatmap(viewType);
+        }
+
+        if (this.props.detail.heatmapData != null && this.state.heatmapRendered == false) {
+            this.renderHeatmap();
+        }
+    }
+
+    handleCrop(nextProps) {
+
+        let {enable, x, y, width, height} = nextProps.detail.crop;
+
+        if(this.props.detail.crop.enable == true && enable == false){
+            let heatmapData = this.state.heatmapData;
+            let type = this.props.detail.viewType;
+            this.heatmap.setData({
+                max: type == VIEW_TYPE_MOVEMENTS ? heatmapData.maxMovements : heatmapData.maxClicks,
+                min: type == VIEW_TYPE_MOVEMENTS ? heatmapData.minMovements : heatmapData.minClicks,
+                data: type == VIEW_TYPE_MOVEMENTS ? heatmapData.movements : heatmapData.clicks
+            });
+        }
+
+        if (enable == false || this.props.detail.crop.enable == false)
+            return;
+
+        let heatmapData = this.state.heatmapData;
+        let type = this.props.detail.viewType;
+
+        let data = type == VIEW_TYPE_MOVEMENTS ? heatmapData.movements : heatmapData.clicks;
+        data = data.filter((item)=> {
+            return (x < item.x && item.x < x + width && y < item.y && item.y < y + height)
+        });
+
+        let minMax = data.reduce((acc, item)=>{
+            acc.min = Math.min(item.value, acc.min);
+            acc.max = Math.max(item.value, acc.max);
+            return acc;
+        }, {min: 9999999, max: 0});
+
+        this.heatmap.setData({
+            max: minMax.max,
+            min: minMax.min,
+            data: data
+        });
+    }
+
+    handleBlurOpacitRadius(nextProps) {
+        let {heatmapRadius, heatmapBlur, heatmapOpacityMax, heatmapOpacityMin} = nextProps.detail;
         let {heatmap} = this;
 
         // zmena configu heatmapy (blur, radius, opacity)
@@ -157,25 +228,6 @@ class ViewDetail extends React.Component {
                     blur: heatmapBlur
                 });
             }
-        }
-
-        // ak nemame nastavenu zakladnu konfiguraciu heatmapy, pokusime sa ju najst a nastavit
-        if (this.props.detail.heatmapConfig == null) {
-            let config = nextProps.heatmaps.filter(item => {
-                return item.id == nextProps.params.id; //this.props.params.id is from url
-            }).pop();
-            if (config !== undefined) {
-                nextProps.dispatch(setConfig(config));
-                this.loadHeatmapData(config.id);
-            }
-        }
-
-        if (this.props.detail.viewType != viewType) {
-            this.renderHeatmap(viewType);
-        }
-
-        if (this.props.detail.heatmapData != null && this.state.heatmapRendered == false) {
-            this.renderHeatmap();
         }
     }
 
@@ -226,10 +278,19 @@ class ViewDetail extends React.Component {
             scrapperUrl = 'http://' + scrapperUrl;
         }
 
+        let onCropChange = (data) => {
+            let canvasBox = this.heatmap._config.container.getBoundingClientRect();
+            data.y = Math.abs(canvasBox.top) + data.y;
+            this.props.dispatch(cropSetParams(data.x, data.y, data.width, data.height));
+        };
+
         return (
             <div className="row last">
-                <div className="col-lg-12 iframe-wrapper" ref="page">
-                    <iframe src={`/api/scrapper?snapshotUrl=${scrapperUrl}`} style={iframeCss}></iframe>
+                <div className="col-lg-12 iframe-bgr">
+                    <div className="iframe-wrapper" ref="page" style={iframeCss}>
+                        <iframe src={`/api/scrapper?snapshotUrl=${scrapperUrl}`}></iframe>
+                        <Cropper heatmap={this.heatmap} active={this.props.detail.crop.enable} onChange={onCropChange}/>
+                    </div>
                 </div>
             </div>
         )
@@ -249,7 +310,7 @@ class ViewDetail extends React.Component {
                 {this.renderLoadingBar()}
                 <div className="row">
                     <div className="col-lg-12">
-                        <HeatmapSettings onRefreshButtonClick={this.renderHeatmap}/>
+                        <HeatmapSettings onRefreshButtonClick={this.renderHeatmap} heatmap={this.heatmap}/>
                     </div>
                 </div>
                 {this.renderIframe()}

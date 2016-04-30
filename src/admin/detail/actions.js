@@ -1,5 +1,5 @@
 import jquery from "jquery";
-import {TreeStructureDetailed} from "./../../client/dataColect/TreeStructureDetailed.js";
+import {TreeStructureDetailed} from "../../client/dataStructure/TreeStructureDetailed.js";
 
 export const HEATMAP_WIDTH = 'HEATMAP_WIDTH';
 export const HEATMAP_HEIGHT = 'HEATMAP_HEIGHT';
@@ -8,14 +8,13 @@ export const HEATMAP_RADIUS = 'HEATMAP_RADIUS';
 export const HEATMAP_BLUR = 'HEATMAP_BLUR';
 export const VIEW_TYPE_MOVEMENTS = 'VIEW_TYPE_MOVEMENTS';
 export const VIEW_TYPE_CLICKS = 'VIEW_TYPE_CLICKS';
-
 export const GET_HEATMAP_DATA_START = 'GET_HEATMAP_DATA_START';
 export const GET_HEATMAP_DATA_SUCCESS = 'GET_HEATMAP_DATA_SUCCESS';
 export const GET_HEATMAP_DATA_FAIL = 'GET_HEATMAP_DATA_FAIL';
-
 export const HEATMAP_DATA_RESET = 'HEATMAP_DATA_RESET';
-
 export const SET_CONFIG = 'SET_CONFIG';
+export const CROP_ENABLE = 'CROP_ENABLE';
+export const CROP_SET_PARAMS = 'CROP_SET_PARAMS';
 
 export function setWidth(width) {
     return {
@@ -111,16 +110,43 @@ function getHeatmapDataFail(error) {
         error
     };
 }
-export function resetHeatmapData(){
+export function resetHeatmapData() {
     return {
         type: HEATMAP_DATA_RESET
     };
 }
 
-
-export function setConfig(config){
+export function setConfig(config) {
     return {
         type: SET_CONFIG,
         config: config
+    }
+}
+
+/**
+ * Function turn on/off cropping heatmap
+ * @param bool true|false
+ */
+export function cropEnable(bool) {
+    return {
+        type: CROP_ENABLE,
+        enable: bool == true
+    }
+}
+
+/**
+ * Function is used to setting cropping parameters.
+ * @param x
+ * @param y
+ * @param width
+ * @param height
+ */
+export function cropSetParams(x, y, width, height) {
+    return {
+        type: CROP_SET_PARAMS,
+        x: x,
+        y: y,
+        width: width,
+        height: height
     }
 }
