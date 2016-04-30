@@ -71,7 +71,7 @@ function getHeatmapData(heatmapId, success, error) {
             url: "/api/visit/" + heatmapId,
             method: "GET",
             dataType: "json"
-        }).done((data)=> {
+        }).done((data) => {
             dispatch(getHeatmapDataSuccess(data));
             if (typeof success == "function") {
                 success();

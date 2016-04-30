@@ -148,7 +148,7 @@ class ElementPath {
                 }
             }
         }
-        return tmp.tmp.reverse().join(ELEMENT_JOINER);
+        return tmp.reverse().join(ELEMENT_JOINER);
     }
 
     /**

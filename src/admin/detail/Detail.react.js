@@ -32,10 +32,23 @@ class ViewDetail extends React.Component {
         };
         this.heatmap = null;
 
-        this.loadHeatmapConfig();
-
         this.renderHeatmap = this.renderHeatmap.bind(this);
         this.loadHeatmapConfig = this.loadHeatmapConfig.bind(this);
+    }
+
+
+    componentDidMount() {
+        let self = this;
+
+
+        window.addEventListener('load', function () {
+            self.props.dispatch(setWidth(document.getElementsByClassName('heatmap-detail')[0].clientWidth - 20));
+            self.props.dispatch(setHeight(document.getElementsByClassName('heatmap-detail')[0].clientHeight - 165));
+        });
+
+        this.loadHeatmapConfig();
+        self.handleOnPageLoad();
+
     }
 
     loadHeatmapConfig() {
@@ -57,17 +70,6 @@ class ViewDetail extends React.Component {
         }
     }
 
-    componentDidMount() {
-        let self = this;
-        window.addEventListener('load', function () {
-            self.props.dispatch(setWidth(document.getElementsByClassName('heatmap-detail')[0].clientWidth - 20));
-            self.props.dispatch(setHeight(document.getElementsByClassName('heatmap-detail')[0].clientHeight - 165));
-        });
-
-
-        this.handleOnPageLoad();
-    }
-
     componentWillUnmount() {
         this.props.dispatch(resetHeatmapData());
     }
@@ -86,11 +88,13 @@ class ViewDetail extends React.Component {
                 coockieBar.parentNode.removeChild(coockieBar);
             }
 
-            this.initHeatmapObject(doc);
-            if (this.props.detail.heatmapData != null) {
-                this.renderHeatmap();
-            }
-            this.setState({pageLoaded: true});
+            setTimeout(()=> {
+                this.initHeatmapObject(doc);
+                if (this.props.detail.heatmapData != null) {
+                    this.renderHeatmap();
+                }
+                this.setState({pageLoaded: true});
+            }, 50);
         });
     }
 
@@ -167,10 +171,10 @@ class ViewDetail extends React.Component {
     handleCrop(nextProps) {
 
         let {enable, x, y, width, height} = nextProps.detail.crop;
+        let heatmapData = this.state.heatmapData;
+        let type = this.props.detail.viewType;
 
-        if(this.props.detail.crop.enable == true && enable == false){
-            let heatmapData = this.state.heatmapData;
-            let type = this.props.detail.viewType;
+        if (this.props.detail.crop.enable == true && enable == false) {
             this.heatmap.setData({
                 max: type == VIEW_TYPE_MOVEMENTS ? heatmapData.maxMovements : heatmapData.maxClicks,
                 min: type == VIEW_TYPE_MOVEMENTS ? heatmapData.minMovements : heatmapData.minClicks,
@@ -181,15 +185,12 @@ class ViewDetail extends React.Component {
         if (enable == false || this.props.detail.crop.enable == false)
             return;
 
-        let heatmapData = this.state.heatmapData;
-        let type = this.props.detail.viewType;
-
         let data = type == VIEW_TYPE_MOVEMENTS ? heatmapData.movements : heatmapData.clicks;
         data = data.filter((item)=> {
             return (x < item.x && item.x < x + width && y < item.y && item.y < y + height)
         });
 
-        let minMax = data.reduce((acc, item)=>{
+        let minMax = data.reduce((acc, item)=> {
             acc.min = Math.min(item.value, acc.min);
             acc.max = Math.max(item.value, acc.max);
             return acc;
@@ -295,7 +296,6 @@ class ViewDetail extends React.Component {
             </div>
         )
     }
-
 
     render() {
         let heatmapTitle = this.props.detail.heatmapConfig != null ? this.props.detail.heatmapConfig.title : '';

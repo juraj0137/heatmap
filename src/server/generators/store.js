@@ -112,7 +112,7 @@ var bulking = function (i, config, cbmain) {
 };
 var conf = {
     max: 1000000,
-    db: 'mysql'
+    db: 'elastic'
 };
 var start = new Date().getTime();
 

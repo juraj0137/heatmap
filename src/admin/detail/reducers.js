@@ -11,12 +11,12 @@ const initialState = {
     heatmapData: null,
     heatmapConfig: null,
     fetchingHeatmapData: false,
-    crop:{
+    crop: {
         enable: false,
-        x:0,
-        y:0,
-        width:0,
-        height:0
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0
     }
 };
 
@@ -80,12 +80,12 @@ export default function heatmapDetail(state = initialState, action) {
             });
 
         case actions.CROP_ENABLE:
-            return Object.assign({},state,{
-                crop: Object.assign({},state.crop, {enable: action.enable})
+            return Object.assign({}, state, {
+                crop: Object.assign({}, state.crop, {enable: action.enable})
             });
         case actions.CROP_SET_PARAMS:
-            return Object.assign({},state,{
-                crop: Object.assign({},state.crop, {
+            return Object.assign({}, state, {
+                crop: Object.assign({}, state.crop, {
                     x: action.x,
                     y: action.y,
                     width: action.width,

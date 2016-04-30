@@ -243,13 +243,15 @@ class SettingsModal extends React.Component {
         let {matchStrings} = this.state,
             id = event.target.getAttribute('data-id');
 
-        matchStrings[id] = this.removeHttp(event.target.value.trim());
+        // matchStrings[id] = this.removeHttp(event.target.value.trim());
+        matchStrings[id] = event.target.value.trim();
 
         this.setState({matchStrings: matchStrings});
     }
 
     handleChangeSnapshotUrl(event) {
-        this.setState({snapshotUrl: this.removeHttp(event.target.value.trim())});
+        // this.setState({snapshotUrl: this.removeHttp(event.target.value.trim())});
+        this.setState({snapshotUrl: event.target.value.trim()});
     }
 
     renderFlashMessages() {
@@ -371,7 +373,7 @@ class SettingsModal extends React.Component {
             }
 
             return (
-                <Input key={i} type="text" data-id={i} value={val} placeholder="url ..." addonBefore="http://"
+                <Input key={i} type="text" data-id={i} value={val} placeholder="url ..."
                        buttonAfter={addButton} onChange={onChange} bsStyle={errors.matchStrings[0]}
                        help={errors.matchStrings[1]}/>
             )
@@ -405,7 +407,7 @@ class SettingsModal extends React.Component {
                             <div className="text-right">Snapshot url:</div>
                         </Col>
                         <Col sm={8}>
-                            <Input type="text" addonBefore="http://" placeholder="Snapshot url ..." value={snapshotUrl}
+                            <Input type="text" placeholder="Snapshot url ..." value={snapshotUrl}
                                    onChange={onChange} bsStyle={errors.snapshotUrl[0]} help={errors.snapshotUrl[1]}/>
                         </Col>
                     </Row>

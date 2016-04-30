@@ -1,5 +1,5 @@
-import {ElementPath} from './elementPath';
-import {HeatmapUtils} from './../utils';
+import {ElementPath} from './ElementPath.js';
+import {HeatmapUtils} from './utils.js';
 
 /**
  * Trieda na uchovavanie zaznamenanych dat, nepouziva sa, sluzila iba pri vyvoji, navrhu a testovani

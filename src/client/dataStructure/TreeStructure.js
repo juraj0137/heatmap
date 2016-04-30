@@ -1,5 +1,5 @@
 import {ElementPath, ELEMENT_JOINER} from './elementPath';
-import {HeatmapUtils} from './../utils';
+import {HeatmapUtils} from './utils';
 
 /**
  * Trieda na uchovavanie zaznamenanych dat, nepouziva sa, sluzila iba pri vyvoji, navrhu a testovani
