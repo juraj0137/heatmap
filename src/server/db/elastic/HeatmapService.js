@@ -1,5 +1,5 @@
 import BaseElasticService from './BaseElasticService.js';
-import Heatmap from './../../../common/model/heatmap';
+import Heatmap from './../model/heatmap';
 
 class HeatmapService extends BaseElasticService {
 

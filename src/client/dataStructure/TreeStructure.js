@@ -1,10 +1,13 @@
+import {ElementPath, ELEMENT_JOINER} from './elementPath';
+import {HeatmapUtils} from './../utils';
+
 /**
+ * Trieda na uchovavanie zaznamenanych dat, nepouziva sa, sluzila iba pri vyvoji, navrhu a testovani
+ *
  * Created by juraj on 12.03.2016.
+ * @deprecated
+ * @class
  */
-
-import {ElementPath, ELEMENT_JOINER} from './../../common/elementPath';
-import {HeatmapUtils} from './../../common/utils';
-
 class TreeStructure {
 
     constructor() {
@@ -73,7 +76,6 @@ class TreeStructure {
             domElements.pop();
         }
     }
-
 
     getDataForHeatmap() {
 

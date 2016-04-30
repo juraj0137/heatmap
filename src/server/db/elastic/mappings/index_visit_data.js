@@ -38,24 +38,23 @@ function initMapping() {
         type: "visit",
         body: {
             properties: {
-                mouse_movements: {
+                heatmap_data: {
                     type: "string",
-                    index: "not_analyzed"
-                },
-                mouse_clicks: {
-                    type: "string",
-                    index: "not_analyzed"
+                    index: "no"
                 },
                 url: {
                     type: "string",
                     index: "not_analyzed"
                 },
                 visit_time: {type: "date"}
+            },
+            _all: {
+                enabled: false
             }
         }
     });
 }
 exports.initMapping = initMapping;
 
-initIndex();
-initMapping;
+// initIndex();
+// initMapping;

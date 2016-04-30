@@ -4,7 +4,7 @@ import { Alert } from 'react-bootstrap';
 import { connect } from 'react-redux';
 
 import {removeFlashmessage} from './../../app/actions.js';
-import FlashMessage, {DEFAULT_DISMISS} from './../../../common/model/flashMessage.js';
+import FlashMessage, {DEFAULT_DISMISS} from './flashMessage.js';
 
 class FlashMessages extends React.Component {
 

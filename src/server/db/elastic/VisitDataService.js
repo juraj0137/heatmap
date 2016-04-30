@@ -1,4 +1,4 @@
-import VisitData from './../../../common/model/visitData';
+import VisitData from './../model/visitData';
 import BaseElasticService from './BaseElasticService.js';
 
 class VisitDataService extends BaseElasticService {

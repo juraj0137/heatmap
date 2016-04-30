@@ -111,23 +111,6 @@ class HeatmapUtils {
         return index;
     }
 
-    /**
-     * Flip array, key will be value and value will be key of array
-     * @param trans
-     * @returns {{}}
-     */
-    static arrayFlip(trans) {
-        var key, tmp_ar = {};
-
-        for (key in trans) {
-            if (trans.hasOwnProperty(key)) {
-                tmp_ar[trans[key]] = key;
-            }
-        }
-
-        return tmp_ar;
-    }
-
     static uuid() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
             var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);

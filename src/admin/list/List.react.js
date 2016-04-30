@@ -5,11 +5,10 @@ import dateformat from "dateformat";
 import { connect } from 'react-redux';
 import {Button, Table, OverlayTrigger, Popover} from "react-bootstrap";
 
-import FlashMessage, {TYPE_SUCCESS, TYPE_ERROR} from './../../common/model/flashMessage';
-import {HeatmapUtils} from './../../common/utils';
+import FlashMessage, {TYPE_SUCCESS, TYPE_ERROR} from './../components/flashMessages/flashMessage';
 import {addFlashmessage,removeFlashmessage} from './../app/actions';
 import SettingsModal from "./../components/settings/SettingsModal.react.js";
-import Heatmap, { STATUS_ACTIVE, STATUS_FINISHED, STATUS_PAUSED, UNDEFINED_ID} from './../../common/model/heatmap.js';
+import Heatmap, { STATUS_ACTIVE, STATUS_FINISHED, STATUS_PAUSED, UNDEFINED_ID} from './../../server/db/model/heatmap.js';
 import {fetchHeatmaps, updateHeatmap} from './actions.js';
 
 
@@ -39,7 +38,7 @@ class ViewList extends React.Component {
         let {dispatch} = this.props;
 
         let loadMsg = new FlashMessage({
-            id: HeatmapUtils.uuid(),
+            id: Math.round(Math.random()*10000),
             text: 'Načítavam data ...'
         });
         dispatch(addFlashmessage(loadMsg));
@@ -132,7 +131,7 @@ class ViewList extends React.Component {
 
                     let {dispatch} = this.props,
                         updateMsg = new FlashMessage({
-                            id: HeatmapUtils.uuid(),
+                            id: Math.round(Math.random()*10000),
                             text: 'Ukadám data ...'
                         });
 

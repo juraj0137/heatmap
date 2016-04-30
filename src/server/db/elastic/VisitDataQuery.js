@@ -1,5 +1,5 @@
 import BaseElasticQuery from './BaseElasticQuery.js';
-import Heatmap from './../../../common/model/heatmap';
+import Heatmap from './../model/heatmap';
 
 class VisitDataQuery extends BaseElasticQuery {
 

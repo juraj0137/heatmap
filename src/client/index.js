@@ -1,12 +1,12 @@
 import Base64 from 'base-64';
 import gzip from 'gzip-js';
 import JSONC from 'jsoncomp';
-import {configHeatmap} from './config';
+import {configHeatmap} from './config/config';
 import {IdleDetect} from './idle-detect';
 
-import {HeatmapUtils} from './../common/utils';
-import VisitData from './../common/model/visitData';
-import {TreeStructureDetailedClient} from './dataColect/TreeStructureDetailedClient';
+import {HeatmapUtils} from './utils';
+import VisitData from './../server/db/model/visitData';
+import {TreeStructureDetailedClient} from 'dataStructure/TreeStructureDetailedClient';
 
 const LOCAL_STORAGE_KEY = 'heatmap_visit_data';
 
@@ -101,7 +101,7 @@ class Heatmap {
                 if (!HeatmapUtils.isEmptyObject(heatmapData)) {
 
                     $.ajax({
-                        url: configHeatmap.apiUrl,
+                        url: configHeatmap.collectUrl,
                         method: "POST",
                         data: {data: JSONC.pack(localStorageData)}
                     }).done(()=> {

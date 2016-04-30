@@ -1,5 +1,5 @@
 import express from 'express';
-import Heatmap from './../../common/model/heatmap.js';
+import Heatmap from './../db/model/heatmap.js';
 import HeatmapService from './../db/elastic/HeatmapService.js';
 import HeatmapQuery from './../db/elastic/HeatmapQuery.js';
 

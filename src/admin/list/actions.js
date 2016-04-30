@@ -1,6 +1,5 @@
 import jquery from "jquery";
-import {HeatmapUtils} from './../../common/utils';
-import Heatmap, {STATUS_ACTIVE,STATUS_FINISHED,STATUS_PAUSED, TYPE_BULK, TYPE_FULL_URL, TYPE_START_WITH} from './../../common/model/heatmap';
+import Heatmap, {STATUS_ACTIVE,STATUS_FINISHED,STATUS_PAUSED, TYPE_BULK, TYPE_FULL_URL, TYPE_START_WITH} from './../../server/db/model/heatmap';
 
 export const HEATMAP_ADD_START = 'HEATMAP_ADD_START';
 export const HEATMAP_ADD_SUCCESS = 'HEATMAP_ADD_SUCCESS';

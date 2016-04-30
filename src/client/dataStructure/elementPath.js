@@ -1,5 +1,3 @@
-import {HeatmapUtils} from './utils';
-
 export const ELEMENT_JOINER = '|';
 export const ELEMENT_POSITION_SEPARATOR = '?';
 export const ELEMENT_UNDEFINED_POSITION = -1;
@@ -129,35 +127,45 @@ export const ELEMENT_MAPPING = {
 
 class ElementPath {
 
-    static getPathToRoot(elementArray) {
+    /**
+     * Vrati retazec reprezentucuji cestu k root elementu v DOM
+     *
+     * @param eventPath
+     * @returns {string}
+     */
+    static getPathToRoot(eventPath) {
 
-        var tmpArray = [];
-        for (let i = 0; i < elementArray.length; i++) {
-            if (elementArray.hasOwnProperty(i)) {
-                if ((elementArray[i] instanceof Window || elementArray[i] instanceof Document) === false) {
+        var tmp = [];
+        for (let i = 0; i < eventPath.length; i++) {
+            if (eventPath.hasOwnProperty(i)) {
+                if ((eventPath[i] instanceof Window || eventPath[i] instanceof Document) === false) {
 
-                    var elmID = ElementPath.createElementId(elementArray[i]);
+                    var elementId = ElementPath.createElementId(eventPath[i]);
 
-                    if (typeof elmID != 'undefined') {
-                        tmpArray.push(elmID);
+                    if (typeof elementId != 'undefined') {
+                        tmp.push(elementId);
                     }
                 }
             }
         }
-        tmpArray = tmpArray.reverse();
-
-        return tmpArray.join(ELEMENT_JOINER);
+        return tmp.tmp.reverse().join(ELEMENT_JOINER);
     }
 
+    /**
+     * Vrati retazec reprezentujuci identifikator elementu skladajuci sa z tag mena a pozicie medzi surodencami
+     *
+     * @param element
+     * @returns {string}
+     */
     static createElementId(element) {
 
-        var elmID = '';
+        var elementId = '';
         if (typeof element.localName != 'undefined') {
-            elmID = element.localName;
+            elementId = element.localName;
 
             // premapujeme stringove nazvy na cisla
             if (typeof ELEMENT_MAPPING[element.localName] != "undefined") {
-                elmID = "" + ELEMENT_MAPPING[element.localName];
+                elementId = "" + ELEMENT_MAPPING[element.localName];
             }
 
             //ziskame poziciu medzi surodeneckymi elementami
@@ -169,25 +177,33 @@ class ElementPath {
                         break;
                     }
                 }
-                elmID += ELEMENT_POSITION_SEPARATOR + index;
-            }else if(element.localName == 'html'){
-                elmID += ELEMENT_POSITION_SEPARATOR + '0';
+                elementId += ELEMENT_POSITION_SEPARATOR + index;
+            } else if (element.localName == 'html') {
+                elementId += ELEMENT_POSITION_SEPARATOR + '0';
             }
         }
-        return elmID;
+        return elementId;
     }
 
-    static getElementsFromPath(path){
-        if (typeof path == "undefined" || path.length == 0) {
+    /**
+     * Vrati pole elementov ziskanych zo retazcovej reprezentacie path
+     *
+     * @param stringPath
+     * @returns {*}
+     */
+    static getElementsFromPath(stringPath) {
+        if (typeof stringPath == "undefined" || stringPath.length == 0) {
             return [];
         }
 
-        return path.split(ELEMENT_JOINER).map((elm) => {
+        return stringPath.split(ELEMENT_JOINER).map((elm) => {
             return ElementPath.getElementNameFromCode(elm);
         });
     }
 
     /**
+     * Premapuje identifikator na nazov a poziciu elementu
+     *
      * @param code
      * @returns {elementTagName, elementSiblingPosition}
      */
@@ -205,7 +221,7 @@ class ElementPath {
                 elementSiblingPosition: elmPosition
             };
 
-        let flippedMapping = HeatmapUtils.arrayFlip(ELEMENT_MAPPING);
+        let flippedMapping = arrayFlip(ELEMENT_MAPPING);
         if (typeof flippedMapping[tagCode] == "string") {
             returnData.elementTagName = flippedMapping[tagCode];
         }
@@ -214,6 +230,24 @@ class ElementPath {
 
     }
 
+}
+
+/**
+ * Flip array, kluc sa stane hodnotou a hodnota klucom pola
+ *
+ * @param array
+ * @returns {{}}
+ */
+function arrayFlip(array) {
+    var key, tmp_ar = {};
+
+    for (key in array) {
+        if (array.hasOwnProperty(key)) {
+            tmp_ar[array[key]] = key;
+        }
+    }
+
+    return tmp_ar;
 }
 
 export {ElementPath};

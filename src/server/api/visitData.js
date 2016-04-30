@@ -1,10 +1,10 @@
 import express from 'express';
-import * as HeatmapConst from './../../common/model/heatmap.js';
-import VisitData from './../../common/model/visitData.js';
+import * as HeatmapConst from './../db/model/heatmap.js';
+import VisitData from './../db/model/visitData.js';
 import VisitDataQuery from './../db/elastic/VisitDataQuery.js';
 import VisitDataService from './../db/elastic/VisitDataService.js';
 import HeatmapService from './../db/elastic/HeatmapService.js';
-import {TreeStructureDetailed} from './../../client/dataColect/TreeStructureDetailed.js';
+import {TreeStructureDetailed} from '../../client/dataStructure/TreeStructureDetailed.js';
 import Base64 from 'base-64';
 import gzip from 'gzip-js';
 import JSONC from 'jsoncomp';
