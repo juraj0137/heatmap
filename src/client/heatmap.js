@@ -6,8 +6,8 @@ import JSONC from 'jsoncomp';
 window.Base64 = Base64;
 window.gzip = gzip;
 
-// import {configHeatmap} from './config/config.js';
-import {configHeatmap} from './config/config.dev.js';
+import {configHeatmap} from './config/config.js';
+// import {configHeatmap} from './config/config.dev.js';
 import {IdleDetect} from './idleDetect.js';
 import VisitData from './../server/db/model/visitData';
 import {TreeStructureDetailedClient} from './dataStructure/TreeStructureDetailedClient.js';
@@ -46,15 +46,17 @@ class Heatmap {
      */
     _bindEvents() {
 
+        const self = this;
+
         document.addEventListener('mousemove', function (event) {
-            this.currentMouseEvent = event;
+            self.currentMouseEvent = event;
         });
 
         ['mousedown', 'touchstart'].forEach(eventName => {
-            document.addEventListener(eventName, this._onClick.bind(this));
+            document.addEventListener(eventName, this._onClick.bind(self));
         });
 
-        window.addEventListener('beforeunload', this._saveToLocalstorage.bind(this));
+        window.addEventListener('beforeunload', this._saveToLocalstorage.bind(self));
 
     }
 

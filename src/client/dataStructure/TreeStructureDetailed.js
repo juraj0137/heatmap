@@ -1,12 +1,15 @@
-import {TreeStructureDetailedClient} from  './TreeStructureDetailedClient.js';
-import {HeatmapUtils} from './../utils.js';
+import {
+    TreeStructureDetailedClient,
+    ELEMENT_DIVIDE_COLUMNS,
+    ELEMENT_DIVIDE_ROWS
+} from  './TreeStructureDetailedClient.js';
 
 const ELEMENT_POSITION_SEPARATOR = '?';
 
 /**
  * Trieda reprezentuje strukturu zaznamenanych dat u navstevnika,
  * avsak je obohatena o metody na spracovanie dat v admine a na serveri
- * 
+ *
  * Created by juraj on 12.03.2016.
  * @class
  */
@@ -19,6 +22,8 @@ class TreeStructureDetailed extends TreeStructureDetailedClient {
     constructor(data) {
         super();
         this.collectedData = data != undefined ? data : {};
+        this.heatmapData = {};
+        this._resetHeatmapData();
     }
 
     /**
@@ -29,7 +34,7 @@ class TreeStructureDetailed extends TreeStructureDetailedClient {
     mergeData(structure) {
         this._traversMerge(this.collectedData, structure);
     }
-    
+
     /**
      * Vrati spracovane data potrebne na vykreslovanie heatmapy
      *
@@ -37,6 +42,8 @@ class TreeStructureDetailed extends TreeStructureDetailedClient {
      * @return {{movements: Array, minMovements: number, maxMovements: number, clicks: Array, minClicks: number, maxClicks: number}}
      */
     getDataForRender(domDocument) {
+
+        this._resetHeatmapData();
 
         let DOMElements = [domDocument != undefined ? domDocument : document.documentElement];
         if (domDocument != undefined) {
@@ -55,9 +62,8 @@ class TreeStructureDetailed extends TreeStructureDetailedClient {
      *
      * @param data
      * @param newData
-     * @private
      */
-    _mergeMovements(data, newData) {
+    static mergeMovements(data, newData) {
         if (data.movements === undefined) {
             data.movements = newData.movements;
         } else {
@@ -77,9 +83,8 @@ class TreeStructureDetailed extends TreeStructureDetailedClient {
      *
      * @param data
      * @param newData
-     * @private
      */
-    _mergeClicks(data, newData) {
+    static mergeClicks(data, newData) {
         if (data.clicks === undefined) {
             data.clicks = newData.clicks;
         } else {
@@ -92,6 +97,21 @@ class TreeStructureDetailed extends TreeStructureDetailedClient {
                 }
             }
         }
+    }
+
+    /**
+     * Reset heat map data
+     * @private
+     */
+    _resetHeatmapData() {
+        this.heatmapData = {
+            movements: [],
+            minMovements: 10000000,
+            maxMovements: 0,
+            clicks: [],
+            minClicks: 10000000,
+            maxClicks: 0
+        };
     }
 
     /**
@@ -115,12 +135,12 @@ class TreeStructureDetailed extends TreeStructureDetailedClient {
 
             // ak su definovane body pohybu
             if (newData[key].movements !== undefined) {
-                this._mergeMovements(data[key], newData[key]);
+                TreeStructureDetailed.mergeMovements(data[key], newData[key]);
             }
 
             // ak su definovane body klikania
             if (newData[key].clicks !== undefined) {
-                this._mergeClicks(data[key], newData[key]);
+                TreeStructureDetailed.mergeClicks(data[key], newData[key]);
             }
 
             if (newData[key].children !== undefined) {
@@ -191,7 +211,20 @@ class TreeStructureDetailed extends TreeStructureDetailedClient {
 
 
                     let k = attentionKey.toString();
-                    let elmPosition = HeatmapUtils.getElementAttentionAreaPosition(currentElm, k[0], k[1], domElements[0]);
+                    let x, y;
+                    if (ELEMENT_DIVIDE_COLUMNS <= 10) {
+                        x = parseInt(k.substr(0, 1));
+                        k = k.substr(1);
+                    } else if (ELEMENT_DIVIDE_COLUMNS <= 100) {
+                        x = parseInt(k.substr(0, 2));
+                        k = k.substr(2);
+                    }
+                    if (ELEMENT_DIVIDE_ROWS <= 10) {
+                        y = parseInt(k.substr(0, 1));
+                    } else if (ELEMENT_DIVIDE_ROWS <= 100) {
+                        y = parseInt(k.substr(0, 2));
+                    }
+                    let elmPosition = TreeStructureDetailed._getElementAttentionAreaPosition(currentElm, x, y, domElements[0]);
 
                     // pridame data na vykraslenie heatmapy
                     if (!isNaN(elmPosition.x) && !isNaN(elmPosition.y)) {
@@ -216,7 +249,7 @@ class TreeStructureDetailed extends TreeStructureDetailedClient {
 
 
                     let k = attentionKey.toString();
-                    let elmPosition = HeatmapUtils.getElementAttentionAreaPosition(currentElm, k[0], k[1], domElements[0]);
+                    let elmPosition = TreeStructureDetailed._getElementAttentionAreaPosition(currentElm, k[0], k[1], domElements[0]);
 
                     // pridame data na vykraslenie heatmapy
                     if (!isNaN(elmPosition.x) && !isNaN(elmPosition.y)) {
@@ -232,6 +265,41 @@ class TreeStructureDetailed extends TreeStructureDetailedClient {
 
             domElements.pop();
         }
+    }
+
+    /**
+     * @param element
+     * @param x
+     * @param y
+     * @param paDoc
+     * @return {{x: number, y: number}}
+     * @private
+     */
+    static _getElementAttentionAreaPosition(element, x, y, paDoc) {
+
+        let box = element.getBoundingClientRect();
+
+        var doc = paDoc !== undefined ? paDoc : document;
+        var body = doc.body;
+        var docElem = doc.documentElement;
+
+        var scrollTop = window.pageYOffset || docElem.scrollTop || body.scrollTop;
+        var scrollLeft = window.pageXOffset || docElem.scrollLeft || body.scrollLeft;
+
+        var clientTop = docElem.clientTop || body.clientTop || 0;
+        var clientLeft = docElem.clientLeft || body.clientLeft || 0;
+
+        let top = (box.top + scrollTop - clientTop);
+        let left = (box.left + scrollLeft - clientLeft);
+
+        let sliceX = (box.width / ELEMENT_DIVIDE_COLUMNS);
+        let sliceY = (box.height / ELEMENT_DIVIDE_ROWS);
+
+        return {
+            x: Math.round(left + (sliceX * x ) + (box.width / (2 * ELEMENT_DIVIDE_COLUMNS))),
+            y: Math.round(top + (sliceY * y ) + (box.height / (2 * ELEMENT_DIVIDE_ROWS)))
+        };
+
     }
 
     /**
@@ -262,7 +330,7 @@ class TreeStructureDetailed extends TreeStructureDetailedClient {
      * @private
      */
     _reduceArray(array) {
-        let xGranularity = 16,
+        let xGranularity = 20,
             yGranularity = 10,
             result = {
                 data: [],

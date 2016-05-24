@@ -1,4 +1,4 @@
-import {configHeatmap} from './config/config.dev.js';
+import {configHeatmap} from './config/config.js';
 import Heatmap from './heatmap.js';
 
 new Heatmap(configHeatmap.enable, configHeatmap.population);
