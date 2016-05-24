@@ -1,5 +1,5 @@
 import jquery from "jquery";
-import Heatmap, {STATUS_ACTIVE,STATUS_FINISHED,STATUS_PAUSED, TYPE_BULK, TYPE_FULL_URL, TYPE_START_WITH} from './../../server/db/model/heatmap';
+import Heatmap from './../../server/db/model/heatmap';
 
 export const HEATMAP_ADD_START = 'HEATMAP_ADD_START';
 export const HEATMAP_ADD_SUCCESS = 'HEATMAP_ADD_SUCCESS';
@@ -26,7 +26,7 @@ export function addHeatmap(heatmap, success, error) {
     return dispatch => {
         dispatch(addHeatmapStart());
 
-        if ((heatmap instanceof Heatmap) === false) {
+        if ((heatmap instanceof Heatmap) == false) {
             dispatch(addHeatmapFail(new Error('Action addHeatmap: param heatmap must be instance of Heatmap')));
             if (typeof error == "function") {
                 error();
@@ -76,7 +76,6 @@ function addHeatmapFail(error) {
  * Load heatmaps
  * @param success callback
  * @param error callback
- * @todo pridat offset a limit konfiguraciu => upravit api
  */
 export function fetchHeatmaps(success, error) {
     return dispatch => {
@@ -132,7 +131,7 @@ export function updateHeatmap(heatmap, success, error) {
     return dispatch => {
         dispatch(updateHeatmapStart());
 
-        if ((heatmap instanceof Heatmap) === false) {
+        if ((heatmap instanceof Heatmap) == false) {
             dispatch(updateHeatmapFail(new Error('Action updateHeatmap: param heatmap must be instance of Heatmap')));
             if (typeof error == "function") {
                 error();

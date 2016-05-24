@@ -2,12 +2,16 @@
   height: 100%;
 
   .iframe-bgr{
+    position: relative;
     background-color: darkgray;
     height: 100%;
     width: 100%;
+    -webkit-transition: .3s ease-in-out;
+    transition: .3s ease-in-out;
   }
 
   .iframe-wrapper {
+    position: relative;
     height: 500px;
     width: 320px;
     margin: 2px auto 0;
@@ -15,6 +19,8 @@
     box-sizing: content-box;
     padding: 2px 2px 0 2px;
     border-bottom: none;
+    -webkit-transition: .1s ease-in-out;
+    transition: .1s ease-in-out;
   }
 
   iframe {
@@ -24,6 +30,17 @@
     border: none;
     &::-webkit-scrollbar {
       display: none;
+    }
+  }
+
+  .fullscreen-button{
+    position: absolute;
+    top:2px;
+    left: 2px;
+    opacity: 0.5;
+    cursor: pointer;
+    &:hover{
+      opacity: 1;
     }
   }
 }

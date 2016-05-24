@@ -434,7 +434,6 @@ class SettingsModal extends React.Component {
                     {this.renderFlashMessages()}
                     {this.renderConfigurationTitle()}
                     {this.renderMatchTypeSelectbox()}
-                    {this.renderStatusButton()}
                     {this.renderMatchStrings()}
                     {this.renderSnapshotUrl()}
                 </Modal.Body>

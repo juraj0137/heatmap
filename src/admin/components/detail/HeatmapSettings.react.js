@@ -14,7 +14,6 @@ import {
     setOpacity,
     setBlur,
     cropEnable,
-    cropSetParams,
     VIEW_TYPE_CLICKS,
     VIEW_TYPE_MOVEMENTS
 } from './../../detail/actions.js';
@@ -36,6 +35,7 @@ class HeatmapSettings extends React.Component {
         this.handleHeightChange = this.handleHeightChange.bind(this);
         this.handleChangeViewType = this.handleChangeViewType.bind(this);
         this.handleRefreshHeatmap = this.handleRefreshHeatmap.bind(this);
+        this.handleFullscreenClick = this.handleFullscreenClick.bind(this);
     }
 
     handleWidthChange(event) {
@@ -66,6 +66,11 @@ class HeatmapSettings extends React.Component {
     handleRefreshHeatmap() {
         if (typeof this.props.onRefreshButtonClick == "function")
             this.props.onRefreshButtonClick.call(this);
+    }
+
+    handleFullscreenClick() {
+        if (typeof this.props.onFullscreenButtonClick == "function")
+            this.props.onFullscreenButtonClick.call(this);
     }
 
     renderDimmensions() {
@@ -149,7 +154,7 @@ class HeatmapSettings extends React.Component {
         let opacityValue = {
             min: this.state.heatmapOpacityMin,
             max: this.state.heatmapOpacityMax
-        }
+        };
 
         return (
             <div className="render-settings-wrapper" style={wrapperStyle}>
@@ -175,6 +180,7 @@ class HeatmapSettings extends React.Component {
                     {this.renderHeatmapType()}
                     {this.renderRenderSettingsButton()}
                     {this.renderCropButton()}
+                    <Button className="fullscreen" onClick={this.handleFullscreenClick}>Fullscreen</Button>
                     <Button bsStyle="success" className="show-heatmap pull-right"
                             onClick={this.handleRefreshHeatmap}>Prekresli heatmapu</Button>
                     <div className="clearfix"></div>

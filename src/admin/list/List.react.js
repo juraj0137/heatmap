@@ -2,14 +2,15 @@ import './heatmap-list.less';
 import React from "react";
 import {Link} from "react-router";
 import dateformat from "dateformat";
-import { connect } from 'react-redux';
-import {Button, Table, OverlayTrigger, Popover} from "react-bootstrap";
+import {connect} from 'react-redux';
+import Diacritics from 'diacritic';
+import {Button, Table, OverlayTrigger, Popover, Input} from "react-bootstrap";
 
 import FlashMessage, {TYPE_SUCCESS, TYPE_ERROR} from './../components/flashMessages/flashMessage';
-import {addFlashmessage,removeFlashmessage} from './../app/actions';
+import {addFlashmessage, removeFlashmessage} from './../app/actions';
 import SettingsModal from "./../components/settings/SettingsModal.react.js";
-import Heatmap, { STATUS_ACTIVE, STATUS_FINISHED, STATUS_PAUSED, UNDEFINED_ID} from './../../server/db/model/heatmap.js';
-import {fetchHeatmaps, updateHeatmap} from './actions.js';
+import Heatmap from './../../server/db/model/heatmap.js';
+import {fetchHeatmaps} from './actions.js';
 
 
 class ViewList extends React.Component {
@@ -19,10 +20,14 @@ class ViewList extends React.Component {
 
         this.state = {
             heatmapModalVisible: false,
-            editedHeatmap: new Heatmap()
+            editedHeatmap: new Heatmap(),
+            filter: {
+                text: ''
+            }
         };
 
         this.editHeatmap = this.editHeatmap.bind(this);
+        this.handleFilterText = this.handleFilterText.bind(this);
         this.openHeatmapModal = this.openHeatmapModal.bind(this);
         this.closeHeatmapModal = this.closeHeatmapModal.bind(this);
     }
@@ -38,7 +43,7 @@ class ViewList extends React.Component {
         let {dispatch} = this.props;
 
         let loadMsg = new FlashMessage({
-            id: Math.round(Math.random()*10000),
+            id: Math.round(Math.random() * 10000),
             text: 'Načítavam data ...'
         });
         dispatch(addFlashmessage(loadMsg));
@@ -92,7 +97,7 @@ class ViewList extends React.Component {
 
     renderTable() {
         return (
-            <Table hover className="heatmap-list">
+            <Table hover striped className="heatmap-list">
                 <thead>
                 <tr>
                     <th className="col-order">#</th>
@@ -108,120 +113,87 @@ class ViewList extends React.Component {
         );
     }
 
-    //@todo refactor
     renderTableRows() {
-        return this.props.heatmaps.heatmaps.filter((item)=> {
-            return item instanceof Heatmap;
-        }).map((item, i)=> {
+        return this.props.heatmaps.heatmaps
+            .filter((item)=> {
+                if ((item instanceof Heatmap) == false)
+                    return false;
 
-            let self = this,
-                status = '',
-                bgStyle = '',
-                statusButton = '';
+                let {text} = this.state.filter;
+                text = Diacritics.clean(text.toLowerCase().trim());
+                if (text.length > 0) {
+                    try {
 
-            const changeState = (e) => {
-                let status = e.target.getAttribute('data-type'),
-                    id = e.target.getAttribute('data-heatmap-id'),
-                    editHeatmap = this.props.heatmaps.filter(item => {
-                        return item.id == id;
-                    })[0];
+                        if (Diacritics.clean(item.title).toLowerCase().trim().match(text)) {
+                            return true;
+                        }
 
-                if (editHeatmap != undefined) {
-                    editHeatmap = editHeatmap.set('status', status);
-
-                    let {dispatch} = this.props,
-                        updateMsg = new FlashMessage({
-                            id: Math.round(Math.random()*10000),
-                            text: 'Ukadám data ...'
-                        });
-
-                    dispatch(addFlashmessage(updateMsg));
-
-                    let updateSuccess = ()=> {
-                            dispatch(removeFlashmessage(updateMsg));
-                        },
-                        updateFailed = ()=> {
-                            dispatch(removeFlashmessage(updateMsg));
-                            let errorMsg = new FlashMessage({
-                                text: 'Nastala chyba pri aktualizovaní dát, skúste neskôr prosím',
-                                type: TYPE_ERROR
-                            });
-                            dispatch(addFlashmessage(errorMsg));
-                        };
-                    dispatch(updateHeatmap(editHeatmap, updateSuccess, updateFailed));
-
+                        return item.matchStrings.filter((matchString)=> {
+                                return Diacritics.clean(matchString).toLowerCase().trim().match(text)
+                            }).length > 0;
+                    } catch (e) {
+                        return true
+                    }
                 }
-            };
+                return true;
+            })
+            .sort((a, b)=> new Date(b.created) - new Date(a.created))
+            .map((item, i)=> {
 
-            switch (item.status) {
-                case STATUS_ACTIVE:
-                    status = 'Aktívna';
-                    statusButton = (
-                        <Button bsStyle="info" bsSize="small" data-type={STATUS_PAUSED} data-heatmap-id={item.id}
-                                onClick={changeState.bind(item)}>Pozastaviť</Button>);
-                    bgStyle = 'success';
-                    break;
-                case STATUS_FINISHED:
-                    status = 'Ukončená';
-                    bgStyle = 'warning';
-                    break;
-                case STATUS_PAUSED:
-                    status = 'Pozastavená';
-                    statusButton = (
-                        <Button bsStyle="info" bsSize="small" data-type={STATUS_ACTIVE} data-heatmap-id={item.id}
-                                onClick={changeState.bind(this)}>Pokračovať</Button>);
-                    bgStyle = 'info';
-                    break;
-            }
+                let self = this,
+                    status = '',
+                    bgStyle = '',
+                    statusButton = '';
 
-            let matchStrings = '';
-            if (item.matchStrings.length > 1) {
-                matchStrings = (
-                    <div>
-                        {item.matchStrings[0]},
-                        <OverlayTrigger trigger="click" placement="right"
-                                        overlay={<Popover id={i} title="Všetky sledované url ..">{item.matchStrings.map((item, i) => {
+                let matchStrings = '';
+                if (item.matchStrings.length > 1) {
+                    matchStrings = (
+                        <div>
+                            {item.matchStrings[0]},
+                            <OverlayTrigger trigger="click" placement="right"
+                                            overlay={<Popover id={i} title="Všetky sledované url ..">{item.matchStrings.map((item, i) => {
                                             return (<div key={i}>{item}</div>)
                                         })}</Popover>}>
-                            <a>všetky...</a>
-                        </OverlayTrigger>
-                    </div>
-                );
-            } else {
-                matchStrings = item.matchStrings[0];
-            }
+                                <a>všetky...</a>
+                            </OverlayTrigger>
+                        </div>
+                    );
+                } else {
+                    matchStrings = item.matchStrings[0];
+                }
 
-                    //<td className="text-center">{status}</td>
-                    //<td className="text-center">{item.pageViews}</td>
-                    //    {statusButton}
-            return (
-                <tr key={i} className={bgStyle} data-heatmap-id={item.id}>
-                    <td>{i + 1}.</td>
-                    <td>
-                        <div className="heatmap-title">{item.title}</div>
-                        <div className="heatmap-match-string">{matchStrings}</div>
-                    </td>
-                    <td className="text-center">{dateformat(item.created.toString(), "dd.mm.yyyy - HH:MM")}</td>
-                    <td>
-                        <Link to={`/detail/${item.id}`}>
-                            <Button bsStyle="success" bsSize="small">
-                                Zobraziť
-                            </Button>
-                        </Link>
-                        <Button bsStyle="warning" bsSize="small" onClick={()=>{self.editHeatmap(item)}}>Upraviť</Button>
-                    </td>
-                </tr>
-            );
-        }).slice(0, 10);
+                return (
+                    <tr key={i} className={bgStyle} data-heatmap-id={item.id}>
+                        <td>{i + 1}.</td>
+                        <td>
+                            <div className="heatmap-title">{item.title}</div>
+                            <div className="heatmap-match-string">{matchStrings}</div>
+                        </td>
+                        <td className="text-center">{dateformat(item.created.toString(), "dd.mm.yyyy - HH:MM")}</td>
+                        <td>
+                            <Link to={`/detail/${item.id}`}>
+                                <Button bsStyle="success" bsSize="small">
+                                    Zobraziť
+                                </Button>
+                            </Link>
+                            <Button bsStyle="warning" bsSize="small"
+                                    onClick={()=>{self.editHeatmap(item)}}>Upraviť</Button>
+                        </td>
+                    </tr>
+                );
+            })
+            .slice(0, 20);
+    }
+
+    handleFilterText(event) {
+        this.setState({
+            filter: {
+                text: event.target.value
+            }
+        })
     }
 
     render() {
-
-        const cssButton = {
-            position: 'absolute',
-            bottom: '40px',
-            right: '10px'
-        };
 
         let {heatmapModalVisible, editedHeatmap} = this.state,
             onModalHide = this.closeHeatmapModal;
@@ -230,11 +202,17 @@ class ViewList extends React.Component {
             <div className="heatmap-list">
                 <SettingsModal show={heatmapModalVisible} editedHeatmap={editedHeatmap} onHide={onModalHide}/>
                 <div className="row">
-                    <div className="col-lg-12">
-                        <h1 className="page-header">Zoznam heat máp</h1>
-                        <Button bsStyle="success" style={cssButton} onClick={this.openHeatmapModal}>
-                            Pridať heat mapu
-                        </Button>
+                    <div className="col-lg-12 page-header row">
+                        <div className="col-lg-4">
+                            <h1 className="pull-left">Zoznam heat máp</h1>
+                        </div>
+                        <div className="col-lg-4">
+                            <Input className="filter-text" type="text" value={this.state.filter.text}
+                                   onChange={this.handleFilterText} placeholder="Filter ..."/>
+                        </div>
+                        <div className="col-lg-4">
+                            <Button bsStyle="success" onClick={this.openHeatmapModal}>Pridať heat mapu</Button>
+                        </div>
                     </div>
                 </div>
                 <div className="row">

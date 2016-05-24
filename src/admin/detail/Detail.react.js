@@ -1,6 +1,7 @@
 import "./heatmap-detail.less";
 import heatmapRenderer from "heatmap.js";
 import React from "react";
+import ReactDOM from "react-dom";
 import {ProgressBar} from "react-bootstrap";
 import {connect} from 'react-redux';
 import {
@@ -10,7 +11,6 @@ import {
     getHeatmapDataIfNeeded,
     resetHeatmapData,
     cropSetParams,
-    VIEW_TYPE_CLICKS,
     VIEW_TYPE_MOVEMENTS
 } from './../detail/actions.js';
 import {getHeatmap} from './../list/actions.js';
@@ -28,26 +28,27 @@ class ViewDetail extends React.Component {
         this.state = {
             heatmapData: null,
             pageLoaded: false,
-            heatmapRendered: false
+            heatmapRendered: false,
+            fullscreen: false
         };
         this.heatmap = null;
 
+        this.resizeWindow = this.resizeWindow.bind(this);
         this.renderHeatmap = this.renderHeatmap.bind(this);
         this.loadHeatmapConfig = this.loadHeatmapConfig.bind(this);
+        this.onFullscreenToggle = this.onFullscreenToggle.bind(this);
     }
 
 
     componentDidMount() {
-        let self = this;
+        console.log('load - componentDidMount');
 
-
-        window.addEventListener('load', function () {
-            self.props.dispatch(setWidth(document.getElementsByClassName('heatmap-detail')[0].clientWidth - 20));
-            self.props.dispatch(setHeight(document.getElementsByClassName('heatmap-detail')[0].clientHeight - 165));
-        });
+        setTimeout(()=> {
+            this.resizeWindow();
+        }, 5);
 
         this.loadHeatmapConfig();
-        self.handleOnPageLoad();
+        this.handleOnPageLoad();
 
     }
 
@@ -68,6 +69,21 @@ class ViewDetail extends React.Component {
         if (heatmapId != undefined && this.props.detail.heatmapData == null) {
             this.props.dispatch(getHeatmapDataIfNeeded(heatmapId));
         }
+    }
+
+    resizeWindow() {
+        let width = ReactDOM.findDOMNode(this).clientWidth - 20;
+        let detailHeight = ReactDOM.findDOMNode(this).clientHeight;
+        let headerHeight = document.getElementsByClassName('page-header')[0].parentElement.clientHeight;
+        let progressHeight = document.getElementsByClassName('progress')[0].parentElement.clientHeight;
+        let settingsHeight = document.getElementsByClassName('heatmap-detail-settings-toolbar')[0].parentElement.clientHeight;
+        let height = detailHeight - headerHeight - progressHeight - settingsHeight - 6;
+        if (this.state.fullscreen) {
+            height = document.getElementsByClassName('iframe-bgr')[0].clientHeight - 6;
+            console.log(document.getElementsByClassName('iframe-bgr'));
+        }
+        this.props.dispatch(setWidth(width));
+        this.props.dispatch(setHeight(height));
     }
 
     componentWillUnmount() {
@@ -256,7 +272,11 @@ class ViewDetail extends React.Component {
         if (max == act) {
             style = 'success';
             setTimeout(()=> {
-                this.refs['loadingBar'].style.display = 'none'
+                this.refs['loadingBar'].style.display = 'none';
+                if (this.a == undefined) {
+                    this.resizeWindow();
+                    this.a = 'a';
+                }
             }, 1500);
         }
 
@@ -279,6 +299,9 @@ class ViewDetail extends React.Component {
             scrapperUrl = 'http://' + scrapperUrl;
         }
 
+        let bgrStyle = this.state.fullscreen ? {position: 'absolute', top: 0, left: 0, zIndex: 1000} : {};
+        let fullscreenBtnStyle = !this.state.fullscreen ? {display: 'none'} : {};
+
         let onCropChange = (data) => {
             let canvasBox = this.heatmap._config.container.getBoundingClientRect();
             data.y = Math.abs(canvasBox.top) + data.y;
@@ -287,15 +310,25 @@ class ViewDetail extends React.Component {
 
         return (
             <div className="row last">
-                <div className="col-lg-12 iframe-bgr">
+                <div className="col-lg-12 iframe-bgr" style={bgrStyle}>
                     <div className="iframe-wrapper" ref="page" style={iframeCss}>
                         <iframe src={`/api/scrapper?snapshotUrl=${scrapperUrl}`}></iframe>
                         <Cropper heatmap={this.heatmap} active={this.props.detail.crop.enable} onChange={onCropChange}/>
+                    </div>
+                    <div className="btn-danger btn-lg fullscreen-button" onClick={this.onFullscreenToggle} style={fullscreenBtnStyle}>
+                        <span>X Fullscreen</span>
                     </div>
                 </div>
             </div>
         )
     }
+
+    onFullscreenToggle(){
+        this.setState({fullscreen: !this.state.fullscreen});
+        setTimeout(()=>{
+            this.resizeWindow();
+        },60);
+    };
 
     render() {
         let heatmapTitle = this.props.detail.heatmapConfig != null ? this.props.detail.heatmapConfig.title : '';
@@ -304,13 +337,14 @@ class ViewDetail extends React.Component {
             <div className="heatmap-detail">
                 <div className="row">
                     <div className="col-lg-12">
-                        <h1 className="page-header">Deail heat mapy <b>{heatmapTitle}</b></h1>
+                        <h3 className="page-header">Detail heat mapy <b>{heatmapTitle}</b></h3>
                     </div>
                 </div>
                 {this.renderLoadingBar()}
                 <div className="row">
                     <div className="col-lg-12">
-                        <HeatmapSettings onRefreshButtonClick={this.renderHeatmap} heatmap={this.heatmap}/>
+                        <HeatmapSettings onRefreshButtonClick={this.renderHeatmap} heatmap={this.heatmap}
+                                         onFullscreenButtonClick={this.onFullscreenToggle}/>
                     </div>
                 </div>
                 {this.renderIframe()}

@@ -1,6 +1,5 @@
 import './app.less';
 import React from "react";
-import { Alert } from 'react-bootstrap';
 
 import Menu from './../components/navigation/menu.js';
 import FlashMessages from './../components/flashMessages/FlashMessages.react.js';
