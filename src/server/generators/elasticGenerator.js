@@ -24,7 +24,7 @@ function feedVisitDataBulk(visitData, bulksize, cb) {
     if (size >= bulksize) {
         connection.bulk({
             body: bulk
-        }).then(function (result) {
+        }).then(function () {
             cb();
         });
         size = 0;

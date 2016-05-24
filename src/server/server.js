@@ -33,7 +33,7 @@ var app = express();
 if (production == false) {
 
     var webpack = require('webpack');
-    var config = require('./../../webpack.config');
+    var config = require('./../../webpack.config.fnc');
     var compiler = webpack(config(production));
 
     app.use(require('webpack-dev-middleware')(compiler, {
@@ -51,7 +51,7 @@ if (production == false) {
  */
 const oneDay = 86400000;
 app.use('/static/admin', express.static(path.join(__dirname, '../../build/admin'), {maxAge: oneDay}));
-app.use('/static/css', express.static(path.join(__dirname, '../../build/css'), {maxAge: oneDay}));
+app.use('/static/css', express.static(path.join(__dirname, '../../build'), {maxAge: oneDay}));
 app.use('/static', express.static(path.join(__dirname, '../../build/client'), {maxAge: oneDay}));
 
 /**

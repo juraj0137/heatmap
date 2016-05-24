@@ -2,7 +2,7 @@ import elastic from 'elasticsearch';
 import BaseService from './../BaseService.js';
 
 class BaseElasticService extends BaseService{
-
+    
     constructor(){
         super();
         this.db = elastic.Client({

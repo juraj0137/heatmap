@@ -1,5 +1,4 @@
 import BaseElasticQuery from './BaseElasticQuery.js';
-import Heatmap from './../model/heatmap';
 
 class VisitDataQuery extends BaseElasticQuery {
 
@@ -10,7 +9,7 @@ class VisitDataQuery extends BaseElasticQuery {
     url(url) {
         this.query.query.bool = this.query.query.bool || {};
         this.query.query.bool.filter = this.query.query.filter || [];
-        this.query.query.bool.filter.push({term: {url: url}})
+        this.query.query.bool.filter.push({term: {url: url}});
 
         return this;
     }
@@ -18,7 +17,7 @@ class VisitDataQuery extends BaseElasticQuery {
     urlWildcard(url) {
         this.query.query.bool = this.query.query.bool || {};
         this.query.query.bool.filter = this.query.query.filter || [];
-        this.query.query.bool.filter.push({wildcard: {url: url}})
+        this.query.query.bool.filter.push({wildcard: {url: url}});
 
         return this;
     }

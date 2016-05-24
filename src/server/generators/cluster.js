@@ -8,7 +8,7 @@ if (cluster.isMaster) {
     }
 
 
-    cluster.on('exit', function (worker, code, signal) {
+    cluster.on('exit', function (worker) {
         meta.workers = meta.workers.filter((item)=> {
             return item.pid != worker.process.pid;
         });

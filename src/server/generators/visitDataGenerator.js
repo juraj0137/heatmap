@@ -1,6 +1,7 @@
 import Base64 from 'base-64';
 import gzip from 'gzip-js';
-import JSONC from 'jsoncomp';
+
+import {ELEMENT_DIVIDE_COLUMNS, ELEMENT_DIVIDE_ROWS} from './../../client/dataStructure/TreeStructureDetailedClient.js';
 
 GLOBAL.Base64 = Base64;
 GLOBAL.gzip = gzip;
@@ -86,17 +87,22 @@ let urls = [
     'http://www.aktuality.sk/spravy/komentare/',
     'http://www.aktuality.sk/spravy/zahranicne/',
     'http://www.aktuality.sk/zdravie/'
-]
+];
 
-function padleft (str) {
-    var pad = "00";
-    return pad.substring(0, pad.length - str.length) + str
+function padleft(str) {
+    if (ELEMENT_DIVIDE_COLUMNS <= 10){
+        return str;
+    }
+
+    if (ELEMENT_DIVIDE_COLUMNS <= 100) {
+        var pad = "00";
+        return pad.substring(0, pad.length - (str+'').length) + str
+    }
 }
 
 function generatePoint() {
-
     return {
-        key: padleft(Math.round(Math.random() * 99)) + "",
+        key: padleft(Math.floor(Math.random() * ELEMENT_DIVIDE_COLUMNS)) + "" + padleft(Math.floor(Math.random() * ELEMENT_DIVIDE_ROWS)),
         value: Math.round(Math.random() * 13)
     }
 }
@@ -131,14 +137,14 @@ function traverse(data){
             elm.movements = {};
             for(let i=0; i<Math.round(Math.random()*15); i++){
                 let point = generatePoint();
-                elm.movements[padleft(point.key)+""] = point.value;
+                elm.movements[(point.key)+""] = point.value;
             }
         }
         if(Math.random() < 0.05){
             elm.clicks = {};
             for(let i=0; i<Math.round(Math.random()*5); i++){
                 let point = generatePoint();
-                elm.clicks[padleft(point.key)+""] = point.value;
+                elm.clicks[(point.key)+""] = point.value;
             }
         }
 

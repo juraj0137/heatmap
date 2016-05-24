@@ -1,4 +1,3 @@
-import express from 'express';
 import elastic from 'elasticsearch';
 
 var elasticClient = elastic.Client({
