@@ -2,10 +2,11 @@ var production = false;
 var gulp = require('gulp');
 var webpack = require('webpack');
 var GulpUtil = require('gulp-util');
-var config = require('./webpack.config');
+var config = require('./webpack.config.fnc');
 var warnings = false;
 
 gulp.task('build', function (callback) {
+    
     console.log('Ecosystem is production', production);
 
     webpack(config(production), function(err, stats) {
