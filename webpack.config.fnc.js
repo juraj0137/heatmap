@@ -52,8 +52,13 @@ function config(production) {
                 {test: /\.eot/, loader: 'url-loader?limit=100000&mimetype=application/vnd.ms-fontobject'},
                 {test: /\.woff2/, loader: 'url-loader?limit=100000&mimetype=application/font-woff2'},
                 {test: /\.woff/, loader: 'url-loader?limit=100000&mimetype=application/font-woff'},
-                {test: /\.ttf/, loader: 'url-loader?limit=100000&mimetype=application/font-ttf'}
+                {test: /\.ttf/, loader: 'url-loader?limit=100000&mimetype=application/font-ttf'},
+                {test: /\.json$/, loader: "json"}
             ].concat(stylesLoaders())
+        },
+        node: {
+            dns: 'mock',
+            net: 'mock'
         },
         plugins: plugins
     };

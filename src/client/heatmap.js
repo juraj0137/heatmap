@@ -123,13 +123,23 @@ class Heatmap {
                 heatmapData = JSON.parse(localStorageData.heatmap_data);
 
                 if (!Heatmap.isEmptyObject(heatmapData)) {
-                    $.ajax({
-                        url: configHeatmap.collectUrl,
+
+                    var fetchUrl = require("fetch").fetchUrl;
+
+                    fetchUrl(configHeatmap.collectUrl, {
                         method: "POST",
-                        data: {data: JSONC.pack(localStorageData)}
-                    }).done(()=> {
+                        payload: {data: JSONC.pack(localStorageData)}
+                    }, (error, meta, body) => {
+                        console.log(body.toString());
                         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(null));
                     });
+
+                    // $.ajax({
+                    //     url: configHeatmap.collectUrl,
+                    //     method: "POST",
+                    //     data: {data: JSONC.pack(localStorageData)}
+                    // }).done(()=> {
+                    // });
                 }
             }
         } catch (e) {
