@@ -34,10 +34,29 @@ class Heatmap {
     _init() {
         this._sendVisitData();
 
+        this._onUrlChange(() => {
+            this._sendVisitData();
+        });
+
         this.dataStructure = new TreeStructureDetailedClient();
         this.currentMouseEvent = null;
 
         this._moveTracking();
+    }
+
+    /**
+     *
+     * @param fnc
+     * @private
+     */
+    _onUrlChange(fnc) {
+        var oldLocation = location.href;
+        setInterval(function () {
+            if (location.href != oldLocation) {
+                fnc();
+                oldLocation = location.href
+            }
+        }, 500);
     }
 
     /**
