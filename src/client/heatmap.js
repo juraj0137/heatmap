@@ -2,6 +2,7 @@
 import Base64 from 'base-64';
 import gzip from 'gzip-js';
 import JSONC from 'jsoncomp';
+import $ from 'jquery';
 
 window.Base64 = Base64;
 window.gzip = gzip;
@@ -126,20 +127,13 @@ class Heatmap {
 
                     var fetchUrl = require("fetch").fetchUrl;
 
-                    fetchUrl(configHeatmap.collectUrl, {
+                    $.ajax({
+                        url: configHeatmap.collectUrl,
                         method: "POST",
-                        payload: {data: JSONC.pack(localStorageData)}
-                    }, (error, meta, body) => {
-                        console.log(body.toString());
+                        data: {data: JSONC.pack(localStorageData)}
+                    }).done(()=> {
                         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(null));
                     });
-
-                    // $.ajax({
-                    //     url: configHeatmap.collectUrl,
-                    //     method: "POST",
-                    //     data: {data: JSONC.pack(localStorageData)}
-                    // }).done(()=> {
-                    // });
                 }
             }
         } catch (e) {

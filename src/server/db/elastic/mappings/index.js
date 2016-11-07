@@ -12,13 +12,13 @@ visitData.deleteIndex().then(
         );
     }
 );
-//
-//heatmaps.deleteIndex().then(
-//    function () {
-//        heatmaps.initIndex().then(
-//            function () {
-//                heatmaps.initMapping();
-//            }
-//        );
-    //}
-//);
+
+heatmaps.deleteIndex().then(
+   function () {
+       heatmaps.initIndex().then(
+           function () {
+               heatmaps.initMapping();
+           }
+       );
+    }
+);

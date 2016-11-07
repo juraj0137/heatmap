@@ -35,7 +35,7 @@
     "heatmap.js": "^2.0.2",
     "history": "^2.0.1",
     "immutable": "^3.7.6",
-    "jquery": "^2.2.2",
+    "jquery": "^2.2.4",
     "js-cache": "^1.0.2",
     "json-loader": "^0.5.4",
     "jsoncomp": "^1.6.1",
