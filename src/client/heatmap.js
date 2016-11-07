@@ -23,8 +23,8 @@ class Heatmap {
                 this._init();
                 this._bindEvents();
 
-                this._onUrlChange(() => {
-                    this._saveToLocalstorage();
+                this._onUrlChange((oldLocation) => {
+                    this._saveToLocalstorage(oldLocation);
                     this._init();
                 });
             }
@@ -54,7 +54,7 @@ class Heatmap {
         var oldLocation = location.href;
         setInterval(function () {
             if (location.href != oldLocation) {
-                fnc();
+                fnc(oldLocation);
                 oldLocation = location.href
             }
         }, 500);
@@ -119,9 +119,9 @@ class Heatmap {
      *
      * @private
      */
-    _saveToLocalstorage() {
+    _saveToLocalstorage(url = window.location.href) {
         let visitData = new VisitData({
-            url: window.location.href,
+            url: url,
             heatmap_data: JSON.stringify(this.dataStructure.collectedData),
             visit_time: new Date()
         });
