@@ -22,6 +22,11 @@ class Heatmap {
             if (Math.random() <= massRatio / 100) {
                 this._init();
                 this._bindEvents();
+
+                this._onUrlChange(() => {
+                    this._saveToLocalstorage();
+                    this._init();
+                });
             }
         }
     }
@@ -33,10 +38,6 @@ class Heatmap {
      */
     _init() {
         this._sendVisitData();
-
-        this._onUrlChange(() => {
-            this._sendVisitData();
-        });
 
         this.dataStructure = new TreeStructureDetailedClient();
         this.currentMouseEvent = null;
@@ -138,6 +139,8 @@ class Heatmap {
             let localStorageDataString = localStorage.getItem(LOCAL_STORAGE_KEY),
                 localStorageData = JSON.parse(localStorageDataString),
                 heatmapData = null;
+
+            console.log('_sendVisitData', localStorageData);
 
             if (localStorageData != null) {
                 heatmapData = JSON.parse(localStorageData.heatmap_data);
