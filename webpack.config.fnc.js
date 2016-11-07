@@ -83,6 +83,9 @@ function config(production) {
                 }
             }
         ));
+        plugins.push(new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify('production')
+        }))
     }
 
     return webpackConfig;
