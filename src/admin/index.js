@@ -45,7 +45,6 @@ class HeatmapAdmin extends React.Component {
                     <Route component={LayoutApp}>
                         <Route path="list" component={ViewList}/>
                         <Route path="detail/:id" component={ViewDetail}/>
-                        <Redirect from="*" to="list"/>
                     </Route>
                 </Router>
             </Provider>

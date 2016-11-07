@@ -1,4 +1,5 @@
 import jquery from "jquery";
+import {config} from '../config'
 import {TreeStructureDetailed} from "../../client/dataStructure/TreeStructureDetailed.js";
 
 export const HEATMAP_WIDTH = 'HEATMAP_WIDTH';
@@ -68,7 +69,7 @@ function getHeatmapData(heatmapId, success, error) {
         dispatch(getHeatmapDataStart());
 
         jquery.ajax({
-            url: "/api/visit/" + heatmapId,
+            url: `${config.basePath}/api/visit/${heatmapId}`,
             method: "GET",
             dataType: "json"
         }).done((data) => {

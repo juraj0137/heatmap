@@ -1,4 +1,5 @@
 import jquery from "jquery";
+import {config} from '../config'
 import Heatmap from './../../server/db/model/heatmap';
 
 export const HEATMAP_ADD_START = 'HEATMAP_ADD_START';
@@ -36,7 +37,7 @@ export function addHeatmap(heatmap, success, error) {
 
         heatmap = heatmap.set('created', new Date());
         jquery.ajax({
-            url: "/api/heatmaps/",
+            url: `${config.basePath}/api/heatmaps/`,
             method: "POST",
             dataType: "json",
             data: heatmap.toJS()
@@ -81,7 +82,7 @@ export function fetchHeatmaps(success, error) {
     return dispatch => {
         dispatch(fetchHeatmapsStart());
         jquery.ajax({
-            url: "/api/heatmaps/",
+            url: `${config.basePath}/api/heatmaps/`,
             method: "GET",
             dataType: "json"
         }).done((data)=> {
@@ -142,7 +143,7 @@ export function updateHeatmap(heatmap, success, error) {
         console.log(heatmap.toJS());
 
         jquery.ajax({
-            url: "/api/heatmaps/",
+            url: `${config.basePath}/api/heatmaps/`,
             method: "PUT",
             dataType: "json",
             data: heatmap.toJS()
@@ -187,7 +188,7 @@ export function getHeatmap(heatmapId, success, error) {
     return dispatch => {
 
         jquery.ajax({
-            url: "/api/heatmaps/" + heatmapId,
+            url: `${config.basePath}/api/heatmaps/${heatmapId}`,
             method: "GET",
             dataType: "json"
         }).done((data)=> {
