@@ -7,7 +7,7 @@ class BaseElasticService extends BaseService{
         super();
         this.db = elastic.Client({
             host: '127.0.0.1:9200',
-            log: false
+            log: 'trace'
         });
     }
 
