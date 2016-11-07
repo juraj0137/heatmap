@@ -121,7 +121,7 @@ class Heatmap {
      */
     _saveToLocalstorage() {
         let visitData = new VisitData({
-            url: window.location.host + '' + window.location.pathname,
+            url: window.location.href,
             heatmap_data: JSON.stringify(this.dataStructure.collectedData),
             visit_time: new Date()
         });
