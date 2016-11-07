@@ -1,8 +1,8 @@
 import * as actions from './actions';
 
 const initialState = {
-    heatmapWidth: 320,
-    heatmapHeight: 500,
+    heatmapWidth: 1024,
+    heatmapHeight: 800,
     heatmapRadius: 50,
     heatmapOpacityMax: 0.80,
     heatmapOpacityMin: 0.01,
