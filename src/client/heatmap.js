@@ -8,7 +8,7 @@ window.gzip = gzip;
 
 import {configHeatmap} from './config/config.js';
 // import {configHeatmap} from './config/config.dev.js';
-import {IdleDetect} from './idleDetect.js';
+import {IdleDetect} from './IdleDetect.js';
 import VisitData from './../server/db/model/visitData';
 import {TreeStructureDetailedClient} from './dataStructure/TreeStructureDetailedClient.js';
 

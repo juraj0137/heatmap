@@ -62,7 +62,7 @@ app.use('/api', require('./api/index.js'));
 /**
  * Pre vsetky ostatne volania zobrazime index.html, kde sa nachadza React App s routrom
  */
-app.get('*', (req, res)=> {
+app.get('*', (req, res) => {
     res.sendFile(__dirname + '/views/index.html');
 });
 

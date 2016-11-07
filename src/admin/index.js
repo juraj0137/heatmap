@@ -7,7 +7,7 @@ import thunk from 'redux-thunk';
 import createBrowserHistory from 'history/lib/createBrowserHistory';
 import {heatmapApp} from './app/reducers';
 
-import LayoutApp from './app/App.react';
+import LayoutApp from './app/App';
 import ViewList from './list/List.react';
 import ViewDetail from './detail/Detail.react.js';
 

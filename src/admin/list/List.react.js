@@ -6,9 +6,9 @@ import {connect} from 'react-redux';
 import Diacritics from 'diacritic';
 import {Button, Table, OverlayTrigger, Popover, Input} from "react-bootstrap";
 
-import FlashMessage, {TYPE_SUCCESS, TYPE_ERROR} from './../components/flashMessages/flashMessage';
+import FlashMessage, {TYPE_SUCCESS, TYPE_ERROR} from '../components/flashMessages/flashMessage';
 import {addFlashmessage, removeFlashmessage} from './../app/actions';
-import SettingsModal from "./../components/settings/SettingsModal.react.js";
+import SettingsModal from "../components/settings/SettingsModal.js";
 import Heatmap from './../../server/db/model/heatmap.js';
 import {fetchHeatmaps} from './actions.js';
 

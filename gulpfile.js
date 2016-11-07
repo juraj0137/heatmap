@@ -26,7 +26,9 @@ gulp.task('build', function (callback) {
 gulp.task('prod', function () {
     production = true;
 });
+
 gulp.task('p', ['prod'], function () {});
+
 gulp.task('check', function () {
     warnings = true;
 });

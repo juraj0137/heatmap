@@ -15,8 +15,8 @@ import {
 } from './../detail/actions.js';
 import {getHeatmap} from './../list/actions.js';
 
-import HeatmapSettings from './../components/detail/HeatmapSettings.react.js';
-import Cropper from './../components/detail/Cropper.react.js';
+import HeatmapSettings from '../components/detail/HeatmapSettings.js';
+import Cropper from '../components/detail/Cropper.js';
 
 class ViewDetail extends React.Component {
 

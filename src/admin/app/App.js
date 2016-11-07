@@ -2,7 +2,7 @@ import './app.less';
 import React from "react";
 
 import Menu from './../components/navigation/menu.js';
-import FlashMessages from './../components/flashMessages/FlashMessages.react.js';
+import FlashMessages from '../components/flashMessages/FlashMessages.js';
 
 class LayoutApp extends React.Component {
 
