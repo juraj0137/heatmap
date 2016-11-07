@@ -50,6 +50,7 @@ if (production == false) {
  * Static files
  */
 const oneDay = 86400000;
+app.use('/static/client', express.static(path.join(__dirname, '../../build/client'), {maxAge: oneDay}));
 app.use('/static/admin', express.static(path.join(__dirname, '../../build/admin'), {maxAge: oneDay}));
 app.use('/static/css', express.static(path.join(__dirname, '../../build'), {maxAge: oneDay}));
 app.use('/static', express.static(path.join(__dirname, '../../build/client'), {maxAge: oneDay}));
