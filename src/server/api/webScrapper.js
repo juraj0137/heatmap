@@ -18,7 +18,7 @@ router.route('/')
                 res.status(200).send($.html());
 
                 browser.window.close();
-            }, 2000);
+            }, 1000);
         });
 
     });
