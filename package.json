@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "scripts": {
     "start-server:win": "set NODE_ENV=production && node src/server/index.js",
-    "start-server:linux": "NODE_ENV=production && sudo nodemon src/server/index.js",
+    "start-server:linux": "NODE_ENV=production && node src/server/index.js",
     "start-db": ".\\bin\\elasticsearch-node-1\\bin\\elasticsearch.bat",
-    "build:win": "set NODE_ENV=production && webpack -p --progress --define process.env.NODE_ENV='\"production\"' --profile --colors --watch",
-    "build:linux": "NODE_ENV=production && webpack -p --progress --define process.env.NODE_ENV='\"production\"' --profile --colors --watch"
+    "build:win": "set NODE_ENV=production && webpack -p --progress --define process.env.NODE_ENV='\"production\"' --profile --colors",
+    "build:linux": "NODE_ENV=production && webpack -p --progress --define process.env.NODE_ENV='\"production\"' --profile --colors"
   },
   "dependencies": {
     "babel-core": "^6.1.2",
