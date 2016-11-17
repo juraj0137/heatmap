@@ -3,5 +3,5 @@
  */
 
 export const config = {
-    basePath: 'http://128.199.44.148'
+    basePath: 'http://188.166.29.100'
 };

@@ -17,7 +17,7 @@ class Topbar extends React.Component {
                         <span className="icon-bar"/>
                         <span className="icon-bar"/>
                     </button>
-                    <Link to="/" className="navbar-brand">Heat mapa</Link>
+                    <Link to="/" className="navbar-brand">Heatmap</Link>
                 </div>
                 <ul className="nav navbar-top-links navbar-right">
                     <li className="dropdown">

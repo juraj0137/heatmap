@@ -40,6 +40,7 @@ export function addHeatmap(heatmap, success, error) {
             url: `${config.basePath}/api/heatmaps/`,
             method: "POST",
             dataType: "json",
+            crossDomain: true,
             data: heatmap.toJS()
         }).done((data)=> {
             dispatch(addHeatmapSuccess(data));
@@ -84,6 +85,7 @@ export function fetchHeatmaps(success, error) {
         jquery.ajax({
             url: `${config.basePath}/api/heatmaps/`,
             method: "GET",
+            crossDomain: true,
             dataType: "json"
         }).done((data)=> {
             dispatch(fetchHeatmapsSuccess(data));
@@ -146,6 +148,7 @@ export function updateHeatmap(heatmap, success, error) {
             url: `${config.basePath}/api/heatmaps/`,
             method: "PUT",
             dataType: "json",
+            crossDomain: true,
             data: heatmap.toJS()
         }).done((data)=> {
             dispatch(updateHeatmapSuccess(data));
@@ -190,6 +193,7 @@ export function getHeatmap(heatmapId, success, error) {
         jquery.ajax({
             url: `${config.basePath}/api/heatmaps/${heatmapId}`,
             method: "GET",
+            crossDomain: true,
             dataType: "json"
         }).done((data)=> {
             dispatch(getHeatmapSuccess(data));

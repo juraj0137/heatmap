@@ -82,9 +82,9 @@ class SettingsModal extends React.Component {
         let {dispatch} = this.props,
             {status, matchType, matchStrings, snapshotUrl, title} = this.state;
 
-        this.setState({flashMessage: {type: 'info', text: 'Ukladám konfiguráciu ...'}});
+        this.setState({flashMessage: {type: 'info', text: 'Saving ...'}});
         let addSuccess = ()=> {
-            this.setState({flashMessage: {type: 'success', text: 'Konfigurácia bola úspešne uložená'}});
+            this.setState({flashMessage: {type: 'success', text: 'Configuration has been saved'}});
             setTimeout(()=> {
                 this.close();
                 this.onHide();
@@ -95,7 +95,7 @@ class SettingsModal extends React.Component {
             this.setState({
                 flashMessage: {
                     type: 'danger',
-                    text: 'Pri ukladaní došlo k chybe, skúste konfiguráciu uložiť neskôr'
+                    text: 'During saving error occured, try again later.'
                 }
             });
         };
@@ -118,10 +118,10 @@ class SettingsModal extends React.Component {
         let {dispatch} = this.props,
             {id, status, matchType, matchStrings, snapshotUrl, title} = this.state;
 
-        this.setState({flashMessage: {type: 'info', text: 'Ukladám konfiguráciu ...'}});
+        this.setState({flashMessage: {type: 'info', text: 'Saving ...'}});
 
         let updateSuccess = ()=> {
-            this.setState({flashMessage: {type: 'success', text: 'Konfigurácia bola úspešne uložená'}});
+            this.setState({flashMessage: {type: 'success', text: 'Configuration has been saved'}});
             setTimeout(()=> {
                 this.close();
                 this.onHide();
@@ -132,7 +132,7 @@ class SettingsModal extends React.Component {
             this.setState({
                 flashMessage: {
                     type: 'danger',
-                    text: 'Pri ukladaní došlo k chybe, skúste konfiguráciu uložiť neskôr'
+                    text: 'During saving error occured, try again later.'
                 }
             });
         };
@@ -183,16 +183,16 @@ class SettingsModal extends React.Component {
         let {title, matchType, matchStrings, snapshotUrl} = this.state;
 
         if (title.length === 0) {
-            errors.title = ["error", "Nezadali ste názov konfigurácie"];
+            errors.title = ["error", "You have to write title of configuration"];
         }
 
         if (matchType == HeatmapUtils.TYPE_UNDEFINED) {
-            errors.matchType = ["error", "Nezadali ste typ zbierania údajov"];
+            errors.matchType = ["error", "You have to choose type of heatmap"];
         } else {
             if (matchStrings.filter(item => {
                     return item.trim().length != 0
                 }).length == 0) {
-                errors.matchStrings = ["error", "Nezadali ste url na zbieranie údajov"];
+                errors.matchStrings = ["error", "You have to write url for collecting data"];
             }
         }
 
@@ -201,7 +201,7 @@ class SettingsModal extends React.Component {
             case HeatmapUtils.TYPE_BULK:
             case HeatmapUtils.TYPE_REGEX:
                 if (snapshotUrl.length == 0) {
-                    errors.snapshotUrl = ["error", "Nezadali ste snapshot url"];
+                    errors.snapshotUrl = ["error", "You have to write snapshot url"];
                 }
         }
 
@@ -278,10 +278,10 @@ class SettingsModal extends React.Component {
         return (
             <Row>
                 <Col sm={3}>
-                    <div className="text-right">Názov konfigurácie:</div>
+                    <div className="text-right">Title:</div>
                 </Col>
                 <Col sm={8}>
-                    <Input type="text" name="heatmap_title" placeholder="Názov konfigurácie ..."
+                    <Input type="text" name="heatmap_title" placeholder="Title ..."
                            value={title} onChange={onChange} bsStyle={errors.title[0]} help={errors.title[1]}/>
                 </Col>
             </Row>
@@ -322,9 +322,9 @@ class SettingsModal extends React.Component {
 
     renderStatusButton() {
         let statuses = {};
-        statuses[HeatmapUtils.STATUS_ACTIVE] = 'Aktívna';
-        statuses[HeatmapUtils.STATUS_PAUSED] = 'Pozastavená';
-        statuses[HeatmapUtils.STATUS_FINISHED] = 'Ukončená';
+        statuses[HeatmapUtils.STATUS_ACTIVE] = 'Active';
+        statuses[HeatmapUtils.STATUS_PAUSED] = 'Paused';
+        statuses[HeatmapUtils.STATUS_FINISHED] = 'Finished';
 
         let html = Object.keys(statuses).map((status, i) => {
             let active = false;
@@ -340,7 +340,7 @@ class SettingsModal extends React.Component {
         return (
             <Row>
                 <Col sm={3}>
-                    <div className="text-right">Stav:</div>
+                    <div className="text-right">Status:</div>
                 </Col>
                 <Col sm={8}><ButtonGroup>{html}</ButtonGroup></Col>
             </Row>
@@ -422,8 +422,8 @@ class SettingsModal extends React.Component {
 
         let {visible, id} = this.state,
             title = id == HeatmapUtils.UNDEFINED_ID
-                ? 'Vytvorenie novej konfigurácie heat mapy...'
-                : 'Úprava konfigurácie heat mapy';
+                ? 'New configuration ...'
+                : 'Edit configuration ...';
 
         return (
             <Modal show={visible} onHide={this.close} className="heatmap-settings-modal" backdrop={true} bsSize="lg">
@@ -438,8 +438,8 @@ class SettingsModal extends React.Component {
                     {this.renderSnapshotUrl()}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={this.save} bsStyle="success">Uložiť</Button>
-                    <Button onClick={this.close}>Zavrieť</Button>
+                    <Button onClick={this.save} bsStyle="success">Save</Button>
+                    <Button onClick={this.close}>Close</Button>
                 </Modal.Footer>
             </Modal>
         );

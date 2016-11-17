@@ -25,13 +25,13 @@ const Heatmap = Record({
 export function type(type) {
     switch (type) {
         case TYPE_FULL_URL:
-            return 'Presná URL';
+            return 'Exact URL';
         case TYPE_BULK:
-            return 'Balík URL';
+            return 'URL bulk';
         case TYPE_REGEX:
             return 'REGEX';
         case TYPE_START_WITH:
-            return 'Začiatok URL';
+            return 'Beginning of URL';
         case TYPE_UNDEFINED:
             return '';
     }
@@ -41,11 +41,11 @@ export function type(type) {
 export function status(status) {
     switch (status) {
         case STATUS_ACTIVE:
-            return 'Aktívna';
+            return 'Active';
         case STATUS_FINISHED:
-            return 'Ukončená';
+            return 'Finished';
         case STATUS_PAUSED:
-            return 'Pozastavená';
+            return 'Paused';
     }
     throw new Error('Heatmap model - nedefinovany status "' + status + '"');
 }

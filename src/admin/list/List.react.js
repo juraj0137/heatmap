@@ -44,14 +44,14 @@ class ViewList extends React.Component {
 
         let loadMsg = new FlashMessage({
             id: Math.round(Math.random() * 10000),
-            text: 'Načítavam data ...'
+            text: 'Loading data ...'
         });
         dispatch(addFlashmessage(loadMsg));
 
         let fetchSuccess = ()=> {
             dispatch(removeFlashmessage(loadMsg));
             dispatch(addFlashmessage(new FlashMessage({
-                text: 'Data načítané ...',
+                text: 'Data loaded ...',
                 type: TYPE_SUCCESS,
                 dismissAfter: 2000
             })));
@@ -62,11 +62,11 @@ class ViewList extends React.Component {
             let errorMsg = new FlashMessage({
                 html: (
                     <span>
-                        Nastala chyba pri načitávaní dát.
+                        Error's occured.
                         <a onClick={()=>{
                             dispatch(fetchHeatmaps());
                             dispatch(removeFlashmessage(errorMsg));
-                        }}>Pokúsiť sa načítať data znovu!</a>
+                        }}>Try again!</a>
                     </span>
                 ),
                 type: TYPE_ERROR
@@ -101,9 +101,9 @@ class ViewList extends React.Component {
                 <thead>
                 <tr>
                     <th className="col-order">#</th>
-                    <th>Názov</th>
-                    <th className="col-time text-center">Vytvorené</th>
-                    <th className="col-actions">Akcie</th>
+                    <th>Title</th>
+                    <th className="col-time text-center">Created</th>
+                    <th className="col-actions">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -151,10 +151,10 @@ class ViewList extends React.Component {
                         <div>
                             {item.matchStrings[0]},
                             <OverlayTrigger trigger="click" placement="right"
-                                            overlay={<Popover id={i} title="Všetky sledované url ..">{item.matchStrings.map((item, i) => {
+                                            overlay={<Popover id={i} title="All watched urls ..">{item.matchStrings.map((item, i) => {
                                             return (<div key={i}>{item}</div>)
                                         })}</Popover>}>
-                                <a>všetky...</a>
+                                <a>all...</a>
                             </OverlayTrigger>
                         </div>
                     );
@@ -173,11 +173,11 @@ class ViewList extends React.Component {
                         <td>
                             <Link to={`/detail/${item.id}`}>
                                 <Button bsStyle="success" bsSize="small">
-                                    Zobraziť
+                                    Show
                                 </Button>
                             </Link>
                             <Button bsStyle="warning" bsSize="small"
-                                    onClick={()=>{self.editHeatmap(item)}}>Upraviť</Button>
+                                    onClick={()=>{self.editHeatmap(item)}}>Edit</Button>
                         </td>
                     </tr>
                 );
@@ -204,14 +204,14 @@ class ViewList extends React.Component {
                 <div className="row">
                     <div className="col-lg-12 page-header row">
                         <div className="col-lg-4">
-                            <h1 className="pull-left">Zoznam heat máp</h1>
+                            <h1 className="pull-left">LIst of heatmaps</h1>
                         </div>
                         <div className="col-lg-4">
                             <Input className="filter-text" type="text" value={this.state.filter.text}
                                    onChange={this.handleFilterText} placeholder="Filter ..."/>
                         </div>
                         <div className="col-lg-4">
-                            <Button bsStyle="success" onClick={this.openHeatmapModal}>Pridať heat mapu</Button>
+                            <Button bsStyle="success" onClick={this.openHeatmapModal}>Add new</Button>
                         </div>
                     </div>
                 </div>

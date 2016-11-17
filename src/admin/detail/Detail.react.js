@@ -337,7 +337,7 @@ class ViewDetail extends React.Component {
             <div className="heatmap-detail">
                 <div className="row">
                     <div className="col-lg-12">
-                        <h3 className="page-header">Detail heat mapy <b>{heatmapTitle}</b></h3>
+                        <h3 className="page-header">Detail of heatmap <b>{heatmapTitle}</b></h3>
                     </div>
                 </div>
                 {this.renderLoadingBar()}

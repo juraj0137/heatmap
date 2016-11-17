@@ -90,12 +90,12 @@ class HeatmapSettings extends React.Component {
     renderHeatmapType() {
         return (
             <div className="heatmap-type">
-                <label className="pull-left">Typ heatmapy:</label>
+                <label className="pull-left">Type:</label>
                 <ButtonGroup>
                     <Button active={this.props.viewType == VIEW_TYPE_MOVEMENTS} data-type={VIEW_TYPE_MOVEMENTS}
-                            onClick={this.handleChangeViewType}>Pohyb</Button>
+                            onClick={this.handleChangeViewType}>Movements</Button>
                     <Button active={this.props.viewType == VIEW_TYPE_CLICKS} data-type={VIEW_TYPE_CLICKS}
-                            onClick={this.handleChangeViewType}>Klikanie</Button>
+                            onClick={this.handleChangeViewType}>Clicks</Button>
                 </ButtonGroup>
             </div>
         )
@@ -110,7 +110,7 @@ class HeatmapSettings extends React.Component {
 
         return (
             <Button className="render-settings-button" active={this.state.renderSettingsVisible} onClick={handleShow}>
-                Možnosti heatmapy
+                Settings
             </Button>
         );
     }
@@ -122,7 +122,7 @@ class HeatmapSettings extends React.Component {
 
         return (
             <Button className="render-settings-button" active={this.props.crop.enable} onClick={handleClick}>
-                Orezanie
+                Crop
             </Button>
         );
     }
@@ -182,7 +182,7 @@ class HeatmapSettings extends React.Component {
                     {this.renderCropButton()}
                     <Button className="fullscreen" onClick={this.handleFullscreenClick}>Fullscreen</Button>
                     <Button bsStyle="success" className="show-heatmap pull-right"
-                            onClick={this.handleRefreshHeatmap}>Prekresli heatmapu</Button>
+                            onClick={this.handleRefreshHeatmap}>Rerender</Button>
                     <div className="clearfix"></div>
                 </div>
                 <div className="row">

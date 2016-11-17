@@ -71,6 +71,7 @@ function getHeatmapData(heatmapId, success, error) {
         jquery.ajax({
             url: `${config.basePath}/api/visit/${heatmapId}`,
             method: "GET",
+            crossDomain: true,
             dataType: "json"
         }).done((data) => {
             dispatch(getHeatmapDataSuccess(data));
